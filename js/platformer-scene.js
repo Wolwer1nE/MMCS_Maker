@@ -10,7 +10,7 @@ export default class PlatformerScene extends Phaser.Scene {
   preload() {
     this.load.spritesheet(
       "player",
-      "../assets/spritesheets/0x72-industrial-player-32px-extruded.png",
+      "./assets/spritesheets/0x72-industrial-player-32px-extruded.png",
       {
         frameWidth: 32,
         frameHeight: 32,
@@ -18,9 +18,9 @@ export default class PlatformerScene extends Phaser.Scene {
         spacing: 2
       }
     );
-    this.load.image("spike", "../assets/images/0x72-industrial-spike.png");
-    this.load.image("tiles", "../assets/tilesets/smb.png");
-    this.load.tilemapTiledJSON("map", "../assets/tilemaps/test_1.json");
+    this.load.image("spike", "./assets/images/0x72-industrial-spike.png");
+    this.load.image("tiles", "./assets/tilesets/smb.png");
+    this.load.tilemapTiledJSON("map", "./assets/tilemaps/test_1.json");
   }
 
   create() {
