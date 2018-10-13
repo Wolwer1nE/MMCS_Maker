@@ -12,9 +12,41 @@ export default class SceneTileEditor {
     this.editedLayer = eLayer;
     this.marker = new MouseTileMarker(scene,map);
 
-    this.tileBrush = 16;
+    SceneTileEditor.Mode = 
+    { 
+      "brick":
+      {
+        tile: 16,
+        sprite: scene.add.sprite(100,100,"tilesSheet", 15)
+                  .setAlpha(0.5)
+                  .setOrigin(0.0)
+                  .setVisible(false)
+      }, 
+      "coin":
+      {
+        tile: 11,
+        sprite: scene.add.sprite(100,100,"tilesSheet", 10)
+                  .setAlpha(0.5)
+                  .setOrigin(0.0)
+                  .setVisible(false)
+      }, 
+      "eraser": {
+        tile: 0,
+        sprite: null
+      }
+    };
+    Object.freeze(SceneTileEditor.Mode);
+    
+    this.setMode(SceneTileEditor.Mode.brick);
+    
     this.concrete = 40;
-    this.isErasing = false;
+  }
+  
+  setMode(newMode)
+  {
+    if (this.mode == newMode)return;
+    this.mode = newMode;
+    this.marker.setSprite(this.mode.sprite);
   }
 
   update(pointer)
@@ -22,7 +54,9 @@ export default class SceneTileEditor {
     const worldPoint = pointer.positionToCamera(this.scene.cameras.main);
     const tileUnderPointer = this.editedLayer.getTileAtWorldXY(worldPoint.x, worldPoint.y);
 
-    if ( tileUnderPointer != null )
+    if ( (tileUnderPointer != null || this.mode == SceneTileEditor.Mode.eraser) &&
+         (tileUnderPointer == null || this.mode != SceneTileEditor.Mode.eraser) ||
+         (tileUnderPointer != null && tileUnderPointer.index == this.concrete))
     {
       this.marker.setHighlight(MouseTileMarker.Highlight.warning);
     } else {
@@ -31,10 +65,9 @@ export default class SceneTileEditor {
 
     this.marker.update(worldPoint);
 
-
     if (pointer.isDown)
     {
-      if (this.isErasing)
+      if (this.mode == SceneTileEditor.Mode.eraser)
       {
         //console.log(tileUnderPointer);
         if (tileUnderPointer != null && tileUnderPointer.index != this.concrete &&
@@ -43,7 +76,7 @@ export default class SceneTileEditor {
       }
       else if (tileUnderPointer == null)
       {
-        this.putTile(this.tileBrush, worldPoint);
+        this.putTile(this.mode.tile, worldPoint);
       }
     }
   }

@@ -1,5 +1,5 @@
 import Player from "./player.js";
-import MouseTileMarker from "./mouse-tile-maker.js";
+import SceneUI from "./scene-ui.js";
 import SceneTileEditor from "./scene-tile-editor.js";
 
 /**
@@ -20,6 +20,11 @@ export default class PlatformerScene extends Phaser.Scene {
     );
     this.load.image("spike", "./assets/images/0x72-industrial-spike.png");
     this.load.image("tiles", "./assets/tilesets/smb.png");
+    this.load.spritesheet("tilesSheet", "./assets/tilesets/smb.png",  {
+        frameWidth: 32,
+        frameHeight: 32
+      });
+    
     this.load.tilemapTiledJSON("map", "./assets/tilemaps/test_1.json");
 
     // SLICK UI
@@ -30,8 +35,7 @@ export default class PlatformerScene extends Phaser.Scene {
     //     sceneKey: 'slickUI'
     // });
 // console.log(this.plugins);
-// this.slickUI.load('./assets/ui/kenney.json');
-
+// this.slickUI.load('./assets/ui/kenney.json');    
   }
 
   create() {
@@ -65,19 +69,17 @@ export default class PlatformerScene extends Phaser.Scene {
 
     this.editor = new SceneTileEditor(this, this.groundLayer, map);
 
-    this.shiftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
+    //this.shiftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
+    this.ui = new SceneUI(this, this.editor, new Phaser.Geom.Rectangle(0,0,100,100));
+    
+    //map.createFromObjects("Objects","coin",{ key:"tiles" }, this);
 }
 
   update(time, delta) {
     if (this.isPaused) return;
     this.player.update();
-
-    // Add a colliding tile at the mouse position
-    const pointer = this.input.activePointer;
-
-    this.editor.isErasing = this.shiftKey.isDown;
-    this.editor.update(pointer);
-
+    this.ui.update();
+    
     if (
       this.player.sprite.y > this.groundLayer.height ||
       this.physics.world.overlap(this.player.sprite, this.spikeGroup)
@@ -102,7 +104,7 @@ export default class PlatformerScene extends Phaser.Scene {
     // Freeze the player to leave them on screen while fading but remove the marker immediately
     this.player.freeze();
     this.editor.destroy();
-    //this.finish.destroy();
+    this.ui.destroy();
 
     cam.once("camerafadeoutcomplete", () => {
       this.player.destroy();
@@ -117,7 +119,8 @@ export default class PlatformerScene extends Phaser.Scene {
 
     this.player.freeze();
     this.editor.destroy();
-    //this.finish.destroy();
+    this.ui.destroy();
+    
     cam.once("camerafadeoutcomplete", () => {
       this.player.destroy();
       this.scene.restart();

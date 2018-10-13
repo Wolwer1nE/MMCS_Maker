@@ -11,7 +11,7 @@ export default class Player {
     const anims = scene.anims;
     anims.create({
       key: "player-idle",
-      frames: anims.generateFrameNumbers("player", { start: 0, end: 0 }),
+      frames: anims.generateFrameNumbers("player", { start: 0, end: 2 }),
       frameRate: 3,
       repeat: -1
     });
