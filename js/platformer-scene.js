@@ -6,7 +6,7 @@ import SceneTileEditor from "./scene-tile-editor.js";
  * A class that extends Phaser.Scene and wraps up the core logic for the platformer level.
  */
 export default class PlatformerScene extends Phaser.Scene {
-		
+
   preload() {
     this.load.spritesheet(
       "player",
@@ -21,12 +21,23 @@ export default class PlatformerScene extends Phaser.Scene {
     this.load.image("spike", "./assets/images/0x72-industrial-spike.png");
     this.load.image("tiles", "./assets/tilesets/smb.png");
     this.load.tilemapTiledJSON("map", "./assets/tilemaps/test_1.json");
+
+    // SLICK UI
+
+    // this.load.scenePlugin({
+    //     key: 'SlickUI',
+    //     url: './js/slick-ui.min.js',
+    //     sceneKey: 'slickUI'
+    // });
+// console.log(this.plugins);
+// this.slickUI.load('./assets/ui/kenney.json');
+
   }
 
   create() {
-    this.isPlayerDead = false;
+    this.isPaused = false;
     this.isEditing = true;
-		
+
     const map = this.make.tilemap({ key: "map" });
     const tiles = map.addTilesetImage("smb", "tiles");
 
@@ -45,44 +56,71 @@ export default class PlatformerScene extends Phaser.Scene {
     this.player = new Player(this, spawnPoint.x, spawnPoint.y);
     this.physics.world.addCollider(this.player.sprite, this.groundLayer);
     this.player.sprite.body.collideWorldBounds = true;
-	
+
+    const finishPoint = map.findObject("Objects", obj => obj.name === "finishPoint");
+    this.finish = new Phaser.Geom.Point(finishPoint.x, finishPoint.y);
+
 //    this.cameras.main.startFollow(this.player.sprite);
 //    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
     this.editor = new SceneTileEditor(this, this.groundLayer, map);
-    
+
     this.shiftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
 }
 
   update(time, delta) {
-    if (this.isPlayerDead) return;
+    if (this.isPaused) return;
     this.player.update();
 
     // Add a colliding tile at the mouse position
-    const pointer = this.input.activePointer;   
+    const pointer = this.input.activePointer;
 
     this.editor.isErasing = this.shiftKey.isDown;
     this.editor.update(pointer);
-		
+
     if (
       this.player.sprite.y > this.groundLayer.height ||
       this.physics.world.overlap(this.player.sprite, this.spikeGroup)
-    ) {
-      // Flag that the player is dead so that we can stop update from running in the future
-      this.isPlayerDead = true;
+   ) {
+     this.lose();
+   }
+   else if(
+     Phaser.Math.Distance.Between(this.player.sprite.x,this.player.sprite.y,
+                                  this.finish.x, this.finish.y) < this.player.sprite.width / 2
+   ) {
+     this.win();
+   }
+  }
 
-      const cam = this.cameras.main;
-      cam.shake(100, 0.05);
-      cam.fade(250, 0, 0, 0);
+  lose() {
+    this.isPaused = true;
 
-      // Freeze the player to leave them on screen while fading but remove the marker immediately
-      this.player.freeze();
-      this.editor.destroy();
+    const cam = this.cameras.main;
+    cam.shake(100, 0.05);
+    cam.fade(250, 0, 0, 0);
 
-      cam.once("camerafadeoutcomplete", () => {
-        this.player.destroy();
-        this.scene.restart();
-      });
-    }
+    // Freeze the player to leave them on screen while fading but remove the marker immediately
+    this.player.freeze();
+    this.editor.destroy();
+    //this.finish.destroy();
+
+    cam.once("camerafadeoutcomplete", () => {
+      this.player.destroy();
+      this.scene.restart();
+    });
+  }
+
+  win() {
+    this.isPaused = true;
+    const cam = this.cameras.main;
+    cam.fade(120, 0, 0, 0);
+
+    this.player.freeze();
+    this.editor.destroy();
+    //this.finish.destroy();
+    cam.once("camerafadeoutcomplete", () => {
+      this.player.destroy();
+      this.scene.restart();
+    });
   }
 }
