@@ -17,17 +17,17 @@ export default class SceneTileEditor {
       "brick":
       {
         tile: 16,
-        sprite: scene.add.sprite(100,100,"tilesSheet", 15)
+        sprite: scene.add.sprite(0,0,"tilesSheet", 15) // IS THIS A LEAK?!
                   .setAlpha(0.5)
-                  .setOrigin(0.0)
+                  .setOrigin(0,0)
                   .setVisible(false)
       }, 
       "coin":
       {
         tile: 11,
-        sprite: scene.add.sprite(100,100,"tilesSheet", 10)
+        sprite: scene.add.sprite(0,0,"tilesSheet", 10) // IS THIS A LEAK?!
                   .setAlpha(0.5)
-                  .setOrigin(0.0)
+                  .setOrigin(0,0)
                   .setVisible(false)
       }, 
       "eraser": {
@@ -40,6 +40,14 @@ export default class SceneTileEditor {
     this.setMode(SceneTileEditor.Mode.brick);
     
     this.concrete = 40;
+
+    const { ONE, TWO, ZERO, SPACEBAR } = Phaser.Input.Keyboard.KeyCodes;
+    this.keys = scene.input.keyboard.addKeys({
+      brick: ONE,
+      coin: TWO,
+      eraser: ZERO,
+      play: SPACEBAR,
+    });
   }
   
   setMode(newMode)
@@ -49,27 +57,32 @@ export default class SceneTileEditor {
     this.marker.setSprite(this.mode.sprite);
   }
 
-  update(pointer)
+  update(pointer, keys)
   {
     const worldPoint = pointer.positionToCamera(this.scene.cameras.main);
     const tileUnderPointer = this.editedLayer.getTileAtWorldXY(worldPoint.x, worldPoint.y);
 
-    if ( (tileUnderPointer != null || this.mode == SceneTileEditor.Mode.eraser) &&
-         (tileUnderPointer == null || this.mode != SceneTileEditor.Mode.eraser) ||
-         (tileUnderPointer != null && tileUnderPointer.index == this.concrete))
-    {
+    if (keys.eraser.isDown)
+      this.setMode(SceneTileEditor.Mode.eraser);
+    if (keys.coin.isDown)
+      this.setMode(SceneTileEditor.Mode.coin);
+    if (keys.brick.isDown)
+      this.setMode(SceneTileEditor.Mode.brick);
+
+    if ((tileUnderPointer != null || this.mode == SceneTileEditor.Mode.eraser) &&
+        (tileUnderPointer == null || this.mode != SceneTileEditor.Mode.eraser) ||
+        (tileUnderPointer != null && tileUnderPointer.index == this.concrete))
+
       this.marker.setHighlight(MouseTileMarker.Highlight.warning);
-    } else {
+    else
       this.marker.setHighlight(MouseTileMarker.Highlight.normal);
-    }
 
     this.marker.update(worldPoint);
 
     if (pointer.isDown)
     {
       if (this.mode == SceneTileEditor.Mode.eraser)
-      {
-        //console.log(tileUnderPointer);
+      {        
         if (tileUnderPointer != null && tileUnderPointer.index != this.concrete &&
             tileUnderPointer.properties.collides)
             this.editedLayer.removeTileAtWorldXY(worldPoint.x, worldPoint.y);

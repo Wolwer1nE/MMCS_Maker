@@ -28,7 +28,7 @@ export default class MouseTileMarker {
     
     const g = this.graphics;
     
-    g.lineStyle(3, this.highlight, 1);
+    g.lineStyle(2, this.highlight, 1);
     g.strokeRect(-1, -1, this.map.tileWidth+2, this.map.tileHeight+2);
     
     if (this.sprite == null)
@@ -45,7 +45,7 @@ export default class MouseTileMarker {
   setSprite(newSprite)
   {
     if (this.sprite == newSprite) return;
-       
+
     if (this.sprite != null)
     {
       this.sprite.setVisible(false);
@@ -53,6 +53,7 @@ export default class MouseTileMarker {
     }
     
     this.graphics.visible = false;
+
     this.sprite = newSprite;
     if (newSprite != null)
     {
@@ -61,6 +62,7 @@ export default class MouseTileMarker {
     }
     else 
       this.graphics = this.eraser;
+
     this.graphics.visible = true;
   }
   

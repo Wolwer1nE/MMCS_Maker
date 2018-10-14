@@ -3,8 +3,10 @@
  * response to WASD/arrow keys. Call its update method from the scene's update and call its destroy
  * method when you're done with the player.
  */
-export default class Player {
-  constructor(scene, x, y) {
+export default class Player 
+{
+  constructor(scene, x, y) 
+  {
     this.scene = scene;
 
     // Create the animations we need from the player spritesheet
@@ -32,7 +34,7 @@ export default class Player {
 
     // Track the arrow keys & WASD
     const { LEFT, RIGHT, UP, W, A, D } = Phaser.Input.Keyboard.KeyCodes;
-    this.keys = scene.input.keyboard.addKeys({
+    const key = scene.input.keyboard.addKeys({
       left: LEFT,
       right: RIGHT,
       up: UP,
@@ -40,24 +42,27 @@ export default class Player {
       a: A,
       d: D
     });
+    
+    this.keys = {
+      left: [key.left, key.a],
+      right: [key.right, key.d],
+      up: [key.up, key.w]
+    };
   }
 
   freeze() {
     this.sprite.body.moves = false;
   }
 
-  update() {
-    const { keys, sprite } = this;
+  update(keys) {
+    const sprite = this.sprite;
     const onGround = sprite.body.blocked.down;
     const acceleration = onGround ? 600 : 200;
-
-    // Apply horizontal acceleration when left/a or right/d are applied
-    if (keys.left.isDown || keys.a.isDown) {
+   
+    if (keys.left.isDown) {
       sprite.setAccelerationX(-acceleration);
-      // No need to have a separate set of graphics for running to the left & to the right. Instead
-      // we can just mirror the sprite.
       sprite.setFlipX(true);
-    } else if (keys.right.isDown || keys.d.isDown) {
+    } else if (keys.right.isDown) {
       sprite.setAccelerationX(acceleration);
       sprite.setFlipX(false);
     } else {
@@ -65,8 +70,8 @@ export default class Player {
     }
 
     // Only allow the player to jump if they are on the ground
-    if (onGround && (keys.up.isDown || keys.w.isDown)) {
-      sprite.setVelocityY(-500);
+    if (onGround && keys.up.isDown) {
+      this.sprite.setVelocityY(-500);
     }
 
     // Update the animation/texture based on the state of the player

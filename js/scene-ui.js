@@ -4,43 +4,55 @@ import SceneTileEditor from "./scene-tile-editor.js";
 
 export default class SceneUI
 {
-  constructor(scene, editor, bounds)
+  constructor(scene, bounds, editor, player)
   {
     this.scene = scene;
-    this.input = scene.input;
     this.bounds = bounds;
     this.editor = editor;
+    this.player = player;
     
     // uiPlugin.add(this.panel = new SlickUI.Element.Panel(bounds.x,bounds.y, bounds.width, bounds.height));
     // this.panel.add(button = new SlickUI.Element.Button(0,bounds.height / 2, 140, 80))
     //   .events.onInputUp.add(function () {
     //     console.log('Clicked save game');
     //   });
+
+    SceneUI.Mode =
+    {
+      "player":0,
+      "editor":1
+    };
+    Object.freeze();
     
-    this.input.keyboard.on("keydown", this.onKeyDown, this.scene);
+    this.setMode(SceneUI.Mode.editor);
   }
 
-  onKeyDown(event)
+  setMode(newMode)
   {
-    console.log(event);
-    switch (event.code)
-    {
-      case "Backquote":
-        this.editor.setMode(SceneTileEditor.Mode.eraser);
-        break;
-      case "Digit1":
-        this.editor.setMode(SceneTileEditor.Mode.brick);
-        break;
-      case "Digit2":
-        this.editor.setMode(SceneTileEditor.Mode.coin);
-        break;
-    }
+    if (this.mode == newMode) return;
+    this.mode = newMode;
   }
   
   update() 
   {
-    const pointer = this.input.activePointer;
-    this.editor.update(pointer);
+    // Hanple editor inputs
+    const pointer = this.scene.input.activePointer;
+    const editorKeys = {
+      "eraser" : { isDown: this.editor.keys.eraser.isDown},
+      "brick" : { isDown: this.editor.keys.brick.isDown},
+      "coin" : { isDown: this.editor.keys.coin.isDown}
+    };    
+
+    this.editor.update(pointer, editorKeys);
+
+    const isDown = (a)=> a.isDown;
+    const playerKeys = {
+      "left" : { isDown: this.player.keys.left.some(isDown)},
+      "right" : { isDown: this.player.keys.right.some(isDown)},
+      "up" : { isDown: this.player.keys.up.some(isDown)}
+    };
+
+    this.player.update(playerKeys);
   }
   
   destroy()
