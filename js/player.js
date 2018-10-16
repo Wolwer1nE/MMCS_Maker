@@ -38,9 +38,9 @@ export default class Player
       left: LEFT,
       right: RIGHT,
       up: UP,
-      w: ONE,
-      a: TWO,
-      d: THREE
+      w: THREE,
+      a: ONE,
+      d: TWO
     });
 
     this.keys = {

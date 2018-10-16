@@ -52,9 +52,10 @@ export default class MakerButton
     button.visible = false;
 
     button.setInteractive();
-    button.on('pointerdown', () => {button.isDown = true;});
-    button.on('pointerup', () => {button.isDown = false;});
-    button.on('pointerout', () => {button.isDown = false;} );
+    button.on('pointerover', (event) => {console.log(event);});
+    button.on('pointerdown', () => {button.isDown = true; button.isUp = false;});
+    button.on('pointerup', () => {button.isDown = false; button.isUp = true;});
+    button.on('pointerout', () => {button.isDown = false; button.isUp = false;} );
 
     button.name = name;
     return button;
@@ -127,45 +128,65 @@ export default class MakerButton
   {
     const button = this.parent.scene.add.graphics();
     const style = this.style;
-    const center = {x:style.size/2, y:style.size/2};
+
+    const topLeft =  {x: style.size/ 4, y: style.size/ 4};
+    const bottomRight = {x: style.size/ 4 + style.size/ 2, y: style.size/ 4+ style.size/ 2};
+    const offset = 2 * style.borderWidth;
+
+    const topLeftLeft = {x: topLeft.x, y: topLeft.y + offset};
+    const topLeftRight = {x: topLeft.x + offset, y: topLeft.y};
+    const bottomRightLeft = {x:bottomRight.x - offset, y: bottomRight.y};
+    const bottomRightRight = {x: bottomRight.x, y: bottomRight.y - offset};
+
+    const topRightLeft = {x: bottomRight.x - offset, y: topLeft.y};
+    const bottomLeftRight = {x: topLeft.x + offset, y:bottomRight.y};
+    const bottomLeftLeft = {x: topLeft.x, y: bottomRight.y - offset};
+    const topRightRight = {x:bottomRight.x, y:topLeft.y + offset};
+
+    const centerTop = {x: style.size /2, y: style.size /2 - offset};
+    const centerBottom = {x:style.size /2, y: style.size /2 + offset};
+    const centerLeft = {x:style.size /2 - offset, y: style.size /2};
+    const centerRight = {x:style.size /2 + offset, y: style.size /2};
 
     button.lineStyle(style.borderWidth, style.highlightColor, style.alpha);
+    button.fillStyle(style.fillColor, style.alpha);
     button.beginPath();
 
-    button.moveTo(style.borderWidth, style.borderWidth);
-    button.lineTo(style.size - style.borderWidth, style.size - style.borderWidth);
-    button.lineTo(style.size - style.borderWidth, style.borderWidth);
+    button.moveTo(topLeftLeft.x, topLeftLeft.y);
+    button.lineTo(topLeftRight.x, topLeftRight.y);
+    button.lineTo(centerTop.x, centerTop.y);
+    button.lineTo(topRightLeft.x, topRightLeft.y);
+    button.lineTo(topRightRight.x, topRightRight.y);
+    button.lineTo(centerRight.x, centerRight.y);
+    button.lineTo(bottomRightRight.x, bottomRightRight.y);
+    button.lineTo(bottomRightLeft.x, bottomRightLeft.y);
+    button.lineTo(centerBottom.x, centerBottom.y);
+    button.lineTo(bottomLeftRight.x, bottomLeftRight.y);
+    button.lineTo(bottomLeftLeft.x, bottomLeftLeft.y);
+    button.lineTo(centerLeft.x, centerLeft.y);
+    button.closePath();
 
-    button.moveTo(style.size - style.borderWidth, style.borderWidth);
-    button.lineTo(style.borderWidth, style.size - style.borderWidth);
-    button.lineTo(style.size - style.borderWidth, style.size - style.borderWidth);
+    button.fillPath();
     button.strokePath();
 
     button.lineStyle(style.borderWidth, style.borderColor, style.alpha);
     button.beginPath();
 
-    button.moveTo(style.borderWidth, style.size - 2*style.borderWidth);
-    button.lineTo(style.borderWidth, 2*style.borderWidth);
-    button.lineTo(center.x - style.borderWidth, center.y);
+    button.moveTo(bottomLeftRight.x, bottomLeftRight.y);
+    button.lineTo(bottomLeftLeft.x, bottomLeftLeft.y);
+    button.lineTo(centerLeft.x, centerLeft.y);
+    button.lineTo(topLeftLeft.x, topLeftLeft.y);
+    button.lineTo(topLeftRight.x, topLeftRight.y);
+    button.lineTo(centerTop.x, centerTop.y);
+    button.lineTo(topRightLeft.x, topRightLeft.y);
+    button.lineTo(topRightRight.x, topRightRight.y);
 
-    button.moveTo(style.borderWidth, style.size);
-    button.lineTo(center.x, center.y + style.borderWidth);
-    button.lineTo(style.size - style.borderWidth, style.size);
+    button.moveTo(centerRight.x, centerRight.y);
+    button.lineTo(bottomRightRight.x, bottomRightRight.y);
 
-    button.moveTo(center.x + style.borderWidth, center.y);
-    button.lineTo(style.size, style.borderWidth);
+    button.moveTo(centerBottom.x, centerBottom.y);
+    button.lineTo(bottomRightLeft.x, bottomRightLeft.y);
 
-    button.moveTo(2*style.borderWidth, style.borderWidth);
-    button.lineTo(style.size - 2*style.borderWidth, style.borderWidth);
-    button.strokePath();
-
-    button.lineStyle(style.borderWidth/2, style.borderColor, style.alpha);
-    button.beginPath();
-
-    button.moveTo(style.borderWidth, style.size);
-    button.lineTo(style.borderWidth, 0);
-    button.moveTo(0, style.borderWidth/2);
-    button.lineTo(style.size, style.borderWidth/2);
     button.strokePath();
 
     button.generateTexture(textureKey, style.size, style.size);

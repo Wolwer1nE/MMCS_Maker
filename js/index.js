@@ -23,9 +23,9 @@ const config = {
 
   plugins: {
     global: [{
-      key: 'GameScalePlugin',
+      key: "GameScalePlugin",
       plugin: Phaser.Plugins.GameScalePlugin,
-      mapping: 'gameScale',
+      mapping: "gameScale",
       data: {
         debounce: false,
         debounceDelay: 50,
@@ -33,7 +33,7 @@ const config = {
         maxWidth: Infinity,
         minHeight: 0,
         minWidth: 0,
-        mode: 'fit',
+        mode: "fit",
         resizeCameras: true,
         snap: null
       }
