@@ -20,13 +20,13 @@ export default class PlatformerScene extends Phaser.Scene {
     );
     //this.load.image("spike", "./assets/images/0x72-industrial-spike.png");
     this.load.image("tiles", "./assets/tilesets/smb.png");
-    this.load.spritesheet("tilesSheet", "./assets/tilesets/smb.png",  
+    this.load.spritesheet("tilesSheet", "./assets/tilesets/smb.png",
     {
         frameWidth: 32,
         frameHeight: 32
       }
     );
-    
+
     this.load.tilemapTiledJSON("map", "./assets/tilemaps/test_1.json");
 
     // SLICK UI
@@ -37,7 +37,7 @@ export default class PlatformerScene extends Phaser.Scene {
     //     sceneKey: 'slickUI'
     // });
 // console.log(this.plugins);
-// this.slickUI.load('./assets/ui/kenney.json');    
+// this.slickUI.load('./assets/ui/kenney.json');
   }
 
   create() {
@@ -70,16 +70,19 @@ export default class PlatformerScene extends Phaser.Scene {
 //    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
     this.editor = new SceneTileEditor(this, this.groundLayer, map);
-    
-    this.ui = new SceneUI(this, new Phaser.Geom.Rectangle(0,0,100,100), this.editor, this.player);
-    
+
+    this.ui = new SceneUI(this,
+      new Phaser.Geom.Rectangle(0,this.groundLayer.height,this.game.canvas.width,this.game.canvas.height-this.groundLayer.height),
+      this.editor, this.player
+    );
+
     //map.createFromObjects("Objects","coin",{ key:"tiles" }, this);
 }
 
   update(time, delta) {
     if (this.isPaused) return;
     this.ui.update();
-    
+
     if (
       this.player.sprite.y > this.groundLayer.height ||
       this.physics.world.overlap(this.player.sprite, this.spikeGroup)
@@ -99,7 +102,7 @@ export default class PlatformerScene extends Phaser.Scene {
 
     const cam = this.cameras.main;
     cam.shake(100, 0.05);
-    
+
     this.restart();
   }
 
@@ -111,7 +114,7 @@ export default class PlatformerScene extends Phaser.Scene {
     this.player.freeze();
     this.editor.destroy();
     this.ui.destroy();
-    
+
     cam.once("camerafadeoutcomplete", () => {
       this.player.destroy();
       this.scene.restart();

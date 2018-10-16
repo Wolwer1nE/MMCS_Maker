@@ -3,9 +3,9 @@
  * response to WASD/arrow keys. Call its update method from the scene's update and call its destroy
  * method when you're done with the player.
  */
-export default class Player 
+export default class Player
 {
-  constructor(scene, x, y) 
+  constructor(scene, x, y)
   {
     this.scene = scene;
 
@@ -33,21 +33,23 @@ export default class Player
       .setOffset(7, 9);
 
     // Track the arrow keys & WASD
-    const { LEFT, RIGHT, UP, W, A, D } = Phaser.Input.Keyboard.KeyCodes;
+    const { LEFT, RIGHT, UP, ONE, TWO, THREE } = Phaser.Input.Keyboard.KeyCodes;
     const key = scene.input.keyboard.addKeys({
       left: LEFT,
       right: RIGHT,
       up: UP,
-      w: W,
-      a: A,
-      d: D
+      w: ONE,
+      a: TWO,
+      d: THREE
     });
-    
+
     this.keys = {
       left: [key.left, key.a],
       right: [key.right, key.d],
       up: [key.up, key.w]
     };
+
+    this.sprite.anims.play("player-idle", true);
   }
 
   freeze() {
@@ -58,7 +60,7 @@ export default class Player
     const sprite = this.sprite;
     const onGround = sprite.body.blocked.down;
     const acceleration = onGround ? 600 : 200;
-   
+
     if (keys.left.isDown) {
       sprite.setAccelerationX(-acceleration);
       sprite.setFlipX(true);

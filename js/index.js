@@ -7,7 +7,7 @@ import PlatformerScene from "./platformer-scene.js";
 const config = {
   type: Phaser.AUTO,
   width: 512,
-  height: 512,
+  height: 640,
   parent: "game-container",
   pixelArt: true,
   backgroundColor: "#5c94fc",
