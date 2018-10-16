@@ -53,6 +53,8 @@ export default class SceneUI
     this.initUI(this.ui, bounds, this.style);
 
     this.modeSwitch = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR);
+    scene.input.addPointer();
+    scene.input.addPointer();
     console.log(this.modeSwitch);
     this.setMode(SceneUI.Mode.editor);
   }
@@ -174,7 +176,7 @@ export default class SceneUI
               SceneUI.Mode.player :
               SceneUI.Mode.editor);
     } else if(this.modeSwitch.isUp &&
-              !this.buttons.editor.play.isDown && 
+              !this.buttons.editor.play.isDown &&
               !this.buttons.player.pause.isDown)
     {
       this.switched = false;

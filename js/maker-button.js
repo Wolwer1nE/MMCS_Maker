@@ -52,8 +52,9 @@ export default class MakerButton
     button.visible = false;
 
     button.setInteractive();
-    button.on('pointerdown', ()=>{button.isDown = true;});
-    button.on('pointerup', ()=>{button.isDown = false;});
+    button.on('pointerdown', () => {button.isDown = true;});
+    button.on('pointerup', () => {button.isDown = false;});
+    button.on('pointerout', () => {button.isDown = false;} );
 
     button.name = name;
     return button;
@@ -166,8 +167,7 @@ export default class MakerButton
     button.moveTo(0, style.borderWidth/2);
     button.lineTo(style.size, style.borderWidth/2);
     button.strokePath();
-    button.moveTo(center.x, center.y);
-    button.rotate(0.5);
+
     button.generateTexture(textureKey, style.size, style.size);
     button.destroy();
 
