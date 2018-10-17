@@ -28,16 +28,6 @@ export default class PlatformerScene extends Phaser.Scene {
     );
 
     this.load.tilemapTiledJSON("map", "./assets/tilemaps/test_1.json");
-
-    // SLICK UI
-
-    // this.load.scenePlugin({
-    //     key: 'SlickUI',
-    //     url: './js/slick-ui.min.js',
-    //     sceneKey: 'slickUI'
-    // });
-// console.log(this.plugins);
-// this.slickUI.load('./assets/ui/kenney.json');
   }
 
   create() {
@@ -113,10 +103,11 @@ export default class PlatformerScene extends Phaser.Scene {
 
     this.player.freeze();
     this.editor.destroy();
-    this.ui.destroy();
+
 
     cam.once("camerafadeoutcomplete", () => {
       this.player.destroy();
+      this.ui.destroy();
       this.scene.restart();
     });
   }

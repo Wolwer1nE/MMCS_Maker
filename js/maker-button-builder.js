@@ -3,7 +3,7 @@
 */
 import SceneTileEditor from "./scene-tile-editor.js";
 
-export default class MakerButton
+export default class MakerButtonBuilder
 {
   constructor(parent, style)
   {
@@ -15,6 +15,12 @@ export default class MakerButton
   {
     var button = null;
     var offset = 0;
+
+    if (!this.parent.scene.textures.exists(name+"Button"))
+    {
+
+    }
+
     switch (name)
     {
       case "pause":
@@ -52,10 +58,7 @@ export default class MakerButton
     button.visible = false;
 
     button.setInteractive();
-    button.on('pointerover', (event) => {console.log(event);});
-    button.on('pointerdown', () => {button.isDown = true; button.isUp = false;});
-    button.on('pointerup', () => {button.isDown = false; button.isUp = true;});
-    button.on('pointerout', () => {button.isDown = false; button.isUp = false;} );
+    button.isDown = false;
 
     button.name = name;
     return button;
@@ -72,7 +75,7 @@ export default class MakerButton
     button.fillStyle(style.fillColor, style.alpha);
     button.fillTriangle(top.x,top.y,point.x,point.y, bottom.x,bottom.y);
 
-    button.lineStyle(style.borderWidth, style.borderColor, style.alpha);
+    button.lineStyle(style.borderWidth, style.shadowColor, style.alpha);
     button.beginPath();
     button.moveTo(bottom.x, bottom.y);
     button.lineTo(top.x, top.y);
@@ -106,7 +109,7 @@ export default class MakerButton
     button.strokeRect(topRight.x, topRight.y, style.size/6, style.size/2);
     button.strokeRect(topLeft.x, topLeft.y, style.size/6, style.size/2);
 
-    button.lineStyle(style.borderWidth, style.borderColor, style.alpha);
+    button.lineStyle(style.borderWidth, style.shadowColor, style.alpha);
     button.beginPath();
     button.moveTo(topLeft.x, topLeft.y + style.size/2+1);
     button.lineTo(topLeft.x, topLeft.y-1);
@@ -169,7 +172,7 @@ export default class MakerButton
     button.fillPath();
     button.strokePath();
 
-    button.lineStyle(style.borderWidth, style.borderColor, style.alpha);
+    button.lineStyle(style.borderWidth, style.shadowColor, style.alpha);
     button.beginPath();
 
     button.moveTo(bottomLeftRight.x, bottomLeftRight.y);
@@ -206,7 +209,7 @@ export default class MakerButton
     button.fillStyle(style.fillColor, style.alpha);
     button.fillTriangle(top.x,top.y,point.x,point.y, bottom.x,bottom.y);
 
-    button.lineStyle(style.borderWidth, style.borderColor, style.alpha);
+    button.lineStyle(style.borderWidth, style.shadowColor, style.alpha);
     button.beginPath();
     button.moveTo(bottom.x, bottom.y);
     button.lineTo(top.x, top.y);
@@ -236,7 +239,7 @@ export default class MakerButton
     button.fillStyle(style.fillColor, style.alpha);
     button.fillTriangle(top.x,top.y,point.x,point.y, bottom.x,bottom.y);
 
-    button.lineStyle(style.borderWidth, style.borderColor, style.alpha);
+    button.lineStyle(style.borderWidth, style.shadowColor, style.alpha);
     button.beginPath();
     button.moveTo(top.x, top.y);
     button.lineTo(point.x, point.y);
@@ -266,7 +269,7 @@ export default class MakerButton
     button.fillStyle(style.fillColor, style.alpha);
     button.fillTriangle(top.x,top.y,point.x,point.y, bottom.x,bottom.y);
 
-    button.lineStyle(style.borderWidth, style.borderColor, style.alpha);
+    button.lineStyle(style.borderWidth, style.shadowColor, style.alpha);
     button.beginPath();
     button.moveTo(top.x, top.y);
     button.lineTo(point.x, point.y);

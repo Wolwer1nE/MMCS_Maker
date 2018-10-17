@@ -1,11 +1,11 @@
 /**
 */
 import SceneTileEditor from "./scene-tile-editor.js";
-import MakerButton from "./maker-button.js";
+import MakerButtonBuilder from "./maker-button-builder.js";
+import MouseTileMarker from "./mouse-tile-marker.js";
 
 export default class SceneUI
 {
-
   constructor(scene, bounds, editor, player)
   {
     this.scene = scene;
@@ -30,17 +30,27 @@ export default class SceneUI
         size: bounds.height / 4 * 1.5,
         borderWidth: 2,
         borderRadius: 3,
-        borderColor: 0x000000,
+        shadowColor: 0x000000,
         fillColor: 0xe86010,
         highlightColor: 0xf0d0b0,
         alpha: 1
+      },
+      marker: {
+        margins: {
+          top: -1,
+          left: -1,
+          bottom: -2,
+          right: -2,
+        },
+        width: editor.editedLayer.tilemap.tileWidth,
+        height: editor.editedLayer.tilemap.tileHeight,
+        borderWidth: 2,
+        borderColor: {
+          normal: 0xffffff,
+          warning: 0xff4f78
+        }
       }
     }
-    // uiPlugin.add(this.panel = new SlickUI.Element.Panel(bounds.x,bounds.y, bounds.width, bounds.height));
-    // this.panel.add(button = new SlickUI.Element.Button(0,bounds.height / 2, 140, 80))
-    //   .events.onInputUp.add(function () {
-    //     console.log('Clicked save game');
-    //   });
 
     SceneUI.Mode =
     {
@@ -53,10 +63,32 @@ export default class SceneUI
     this.initUI(this.ui, bounds, this.style);
 
     this.modeSwitch = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR);
+
+    const marker = this.marker = new MouseTileMarker(scene, this.style.marker);
+
+    editor.editedLayer.on(SceneTileEditor.Events.modeChanged,
+      (event) => {
+        marker.setSprite(event.mode.sprite)
+    });
+    editor.editedLayer.on(SceneTileEditor.Events.pointerOut,
+      (event) => {
+        marker.setVisible(false)
+    });
+    editor.editedLayer.on(SceneTileEditor.Events.pointerOver,
+      (event) => {
+        marker.setVisible(true)
+    });
+    editor.editedLayer.on(SceneTileEditor.Events.tileChanged, marker.updateFor, marker);
+
     scene.input.addPointer();
     scene.input.addPointer();
-    console.log(this.modeSwitch);
+    scene.input.on("gameobjectdown", this.onObjectDown, this);
+    scene.input.on("gameobjectup", this.onObjectUp, this);
+    scene.input.on("pointerup", this.onPointerUp, this);
+    scene.input.keyboard.on("keydown", this.onKeyboardDown, this);
+
     this.setMode(SceneUI.Mode.editor);
+    this.editor.setMode(SceneTileEditor.Mode.brick);
   }
 
   setMode(newMode)
@@ -78,7 +110,7 @@ export default class SceneUI
 
   initUI(ui, bounds, style)
   {
-    const panel = this.panel = this.scene.add.graphics();
+    const panel = this.scene.add.graphics();
 
     const panelRect = new Phaser.Geom.Rectangle(
       style.panel.margins.left,
@@ -98,31 +130,28 @@ export default class SceneUI
     //panel.visible = false;
     ui.add(panel);
 
-    const overlay = this.overlay = this.scene.add.graphics();
-    const underlay = this.overlay = this.scene.add.graphics();
+    const underlay = this.underlay = this.scene.add.graphics();
     const buttonStep = panelRect.width / 4 - style.button.size;
     const buttonPos = []
 
-    overlay.lineStyle(style.button.borderWidth, style.button.borderColor, style.button.alpha);
     underlay.fillStyle(style.button.fillColor, style.button.alpha);
 
     for (var i in [0,1,2,3]) {
       const x = panelRect.x + i*(style.button.size + buttonStep) + buttonStep /2;
       const y = panelRect.y + style.button.size;
-      buttonPos.push({x:x,y:y});
-
-      overlay.strokeRoundedRect(
-        x, y,
-        style.button.size, style.button.size,
-        style.button.borderRadius
-      );
+      buttonPos.push({x: x, y: y});
 
       underlay.fillRoundedRect(
         x, y,
         style.button.size, style.button.size,
         style.button.borderRadius
       );
-      underlay.lineStyle(style.button.borderWidth, style.button.borderColor, style.button.alpha);
+      underlay.fillRoundedRect(
+        x, y,
+        style.button.size, style.button.size,
+        style.button.borderRadius
+      );
+      underlay.lineStyle(style.button.borderWidth, style.button.shadowColor, style.button.alpha);
       underlay.beginPath();
       underlay.moveTo(x, y+style.button.size-style.button.borderWidth);
       underlay.lineTo(x+style.button.size-style.button.borderWidth,
@@ -143,7 +172,7 @@ export default class SceneUI
     ui.addAt(underlay, 1);
 
 
-    const maker = new MakerButton(ui, style.button);
+    const maker = new MakerButtonBuilder(ui, style.button);
     const buttons = {
       "player" : Object.keys(this.player.keys)
                  .concat(["pause"])
@@ -160,51 +189,79 @@ export default class SceneUI
       });
     });
 
-    ui.addAt(overlay, ui.length-1);
-
     ui.setPosition(bounds.x, bounds.y);
 
   }
 
   update()
   {
-    if ((this.modeSwitch.isDown ||
-        this.buttons.editor.play.isDown ||
-        this.buttons.player.pause.isDown) && !this.switched )
-    {
-      this.setMode(this.mode == SceneUI.Mode.editor ?
-              SceneUI.Mode.player :
-              SceneUI.Mode.editor);
-    } else if(this.modeSwitch.isUp &&
-              !this.buttons.editor.play.isDown &&
-              !this.buttons.player.pause.isDown)
-    {
-      this.switched = false;
-    }
-
     const buttons = this.buttons[this.mode];
-    if (this.mode == SceneUI.Mode.editor)
+    if (this.mode == SceneUI.Mode.player)
     {
-      const pointer = this.scene.input.activePointer;
-      const editorKeys = {
-        "erase" : { isDown: this.editor.keys.erase.isDown || buttons.erase.isDown},
-        "brick" : { isDown: this.editor.keys.brick.isDown || buttons.brick.isDown},
-        "coin" :  { isDown: this.editor.keys.coin.isDown  || buttons.coin.isDown}
-      };
-      this.editor.update(pointer, editorKeys);
-    } else {
       const isDown = (a)=> a.isDown;
       const playerKeys = {
-        "left" :  { isDown: this.player.keys.left.some(isDown)  || buttons.left.isDown},
-        "right" : { isDown: this.player.keys.right.some(isDown) || buttons.right.isDown},
-        "up" :    { isDown: this.player.keys.up.some(isDown)    || buttons.up.isDown}
+        "left" :  { isDown: this.player.keys.left.some(isDown)  || this.buttons.player.left.isDown},
+        "right" : { isDown: this.player.keys.right.some(isDown) || this.buttons.player.right.isDown},
+        "up" :    { isDown: this.player.keys.up.some(isDown)    || this.buttons.player.up.isDown}
       };
       this.player.update(playerKeys);
+    } else {
+      const pointer = this.scene.input.activePointer;
+      this.editor.update(pointer);
     }
+  }
+
+  onPointerUp(pointer)
+  {
+    if(pointer.touchDownInside)
+      pointer.touchDownInside.isDown = false;
+  }
+
+  onObjectDown(pointer, object)
+  {
+    object.isDown = true;
+    pointer.touchDownInside = object;
+  }
+
+  onObjectUp(pointer, object)
+  {
+    if(SceneTileEditor.Mode.hasOwnProperty(object.name))
+    {
+      this.editor.setMode(SceneTileEditor.Mode[object.name]);
+    }
+    else if (object == this.buttons.editor.play ||
+             object == this.buttons.player.pause)
+    {
+      this.setMode(this.mode == SceneUI.Mode.editor ?
+        SceneUI.Mode.player :
+        SceneUI.Mode.editor
+      );
+    }
+  }
+
+  onKeyboardDown(event)
+  {
+    if(event.keyCode == this.modeSwitch.keyCode)
+    {
+      this.setMode(this.mode == SceneUI.Mode.editor ?
+        SceneUI.Mode.player :
+        SceneUI.Mode.editor
+      );
+    }
+    else  if (this.mode == SceneUI.Mode.editor) {
+
+      const editorMode = Object.values(SceneTileEditor.Mode).find((x) => {return x.hotkey == event.keyCode});
+      if (editorMode)
+       this.editor.setMode(editorMode);
+    }
+    // if(SceneTileEditor.Mode.values(object.name))
+    // {
+    //   this.editor.setMode(SceneTileEditor.Mode[object.name]);
+    // }
   }
 
   destroy()
   {
-    // this.panel.destroy();
+    this.ui.destroy();
   }
 }
