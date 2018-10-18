@@ -3,11 +3,20 @@
  * response to WASD/arrow keys. Call its update method from the scene's update and call its destroy
  * method when you're done with the player.
  */
-export default class Player
+
+export default class Player extends Phaser.Events.EventEmitter
 {
   constructor(scene, x, y)
   {
+    super();
+
     this.scene = scene;
+
+    Player.Events = {
+      "win":"win",
+      "death":"death"
+    }
+    Object.freeze(Player.Events);
 
     // Create the animations we need from the player spritesheet
     const anims = scene.anims;
@@ -86,7 +95,9 @@ export default class Player
     }
   }
 
-  destroy() {
+  destroy()
+  {
+    this.removeAllListeners();
     this.sprite.destroy();
   }
 }

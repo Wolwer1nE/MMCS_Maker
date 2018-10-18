@@ -1,17 +1,19 @@
 /**
 */
 import SceneTileEditor from "./scene-tile-editor.js";
+import ScenePlayer from "./scene-player.js";
 import MakerButtonBuilder from "./maker-button-builder.js";
 import MouseTileMarker from "./mouse-tile-marker.js";
 
 export default class SceneUI
 {
-  constructor(scene, bounds, editor, player)
+  constructor(scene, bounds, editor, levelPlayer)
   {
     this.scene = scene;
     this.bounds = bounds;
     this.editor = editor;
-    this.player = player;
+    this.levelPlayer = levelPlayer;
+
     this.style = {
       panel: {
         margins: {
@@ -34,6 +36,21 @@ export default class SceneUI
         fillColor: 0xe86010,
         highlightColor: 0xf0d0b0,
         alpha: 1
+      },
+      hotkey: {
+        margins: {left: 2},
+        color: "#000000",
+        align: 'left'
+      },
+      label: {
+        margins: {left: 2, top:2},
+        color: "#e86010",
+        fontSize: 24,
+        shadow: {
+          offsetX: 2,
+          offsetY: 2,
+          fill: true
+        }
       },
       marker: {
         margins: {
@@ -62,26 +79,24 @@ export default class SceneUI
     this.ui = this.scene.add.container();
     this.initUI(this.ui, bounds, this.style);
 
-    this.modeSwitch = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR);
-
     const marker = this.marker = new MouseTileMarker(scene, this.style.marker);
 
     editor.editedLayer.on(SceneTileEditor.Events.modeChanged,
-      (event) => {
-        marker.setSprite(event.mode.sprite)
-    });
+      event => marker.setSprite(event.mode.sprite));
     editor.editedLayer.on(SceneTileEditor.Events.pointerOut,
-      (event) => {
-        marker.setVisible(false)
-    });
+      event => marker.setVisible(false));
     editor.editedLayer.on(SceneTileEditor.Events.pointerOver,
-      (event) => {
-        marker.setVisible(true)
-    });
+      event => marker.setVisible(true));
+
     editor.editedLayer.on(SceneTileEditor.Events.tileChanged, marker.updateFor, marker);
+    levelPlayer.on(ScenePlayer.Events.coinCollected,
+    coins => this.updateCoins(coins));
+    levelPlayer.on(ScenePlayer.Events.timerUpdated, this.updateTime, this);
 
     scene.input.addPointer();
     scene.input.addPointer();
+    this.modeSwitch = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR);
+
     scene.input.on("gameobjectdown", this.onObjectDown, this);
     scene.input.on("gameobjectup", this.onObjectUp, this);
     scene.input.on("pointerup", this.onPointerUp, this);
@@ -108,6 +123,15 @@ export default class SceneUI
 
     this.editor.setEditing(this.mode == SceneUI.Mode.editor);
     this.marker.setVisible(this.mode == SceneUI.Mode.editor);
+    this.timeLabel.visible = this.mode == SceneUI.Mode.player;
+    this.coinsLabel.visible = this.mode == SceneUI.Mode.player;
+
+    if (this.mode == SceneUI.Mode.player)
+    {
+      this.levelPlayer.startLevel();
+    }
+    else
+      this.levelPlayer.resetLevel();
   }
 
   initUI(ui, bounds, style)
@@ -148,11 +172,6 @@ export default class SceneUI
         style.button.size, style.button.size,
         style.button.borderRadius
       );
-      underlay.fillRoundedRect(
-        x, y,
-        style.button.size, style.button.size,
-        style.button.borderRadius
-      );
       underlay.lineStyle(style.button.borderWidth, style.button.shadowColor, style.button.alpha);
       underlay.beginPath();
       underlay.moveTo(x, y+style.button.size-style.button.borderWidth);
@@ -170,13 +189,65 @@ export default class SceneUI
       underlay.lineTo(x+style.button.size-style.button.borderWidth,
                       y+style.button.borderWidth);
       underlay.strokePath();
+
+      if (this.scene.sys.game.device.os.desktop)
+      {
+        const hotkey = Number(i) + 1;
+        ui.add(this.scene.add.text(
+          x + style.button.size + style.hotkey.margins.left,
+          y,
+          hotkey,
+          style.hotkey
+        ));
+      }
     }
     ui.addAt(underlay, 1);
 
+    const coinsLabel = this.coinsLabel = this.scene.add.container();
+    const coinsIcon = this.scene.add.sprite( 0, 0,
+      SceneTileEditor.Mode.coin.sprite.texture.key,
+      SceneTileEditor.Mode.coin.sprite.frame.name)
+      .setOrigin(0,0)
+      .setScale(0.75);
+    const coinsText = this.scene.add.text(
+      coinsIcon.width, 0,
+      "COINS",
+      this.style.label
+    );
+    coinsText.name = "label"
+    coinsLabel.add(coinsText);
+    coinsLabel.add(coinsIcon);
+    coinsLabel.setPosition(panelRect.x + style.button.size, style.label.margins.top)
+    ui.add(coinsLabel);
+
+    const timeLabel = this.timeLabel = this.scene.add.container();
+    const timeIconShadow = this.scene.add.sprite( 0, 0,
+      SceneTileEditor.Mode.coin.sprite.texture.key,
+      "18")
+      .setOrigin(0,0)
+      .setScale(0.75)
+      .setTint(0)
+      .setPosition(style.label.shadow.offsetX, style.label.shadow.offsetY);
+    const timeIcon = this.scene.add.sprite( 0, 0,
+      SceneTileEditor.Mode.coin.sprite.texture.key,
+      "18")
+      .setOrigin(0,0)
+      .setScale(0.75);
+     const timeText = this.scene.add.text(
+      timeIcon.width, 0,
+      "TIME",
+      this.style.label
+    );
+    timeText.name = "label"
+    timeLabel.add(timeIconShadow);
+    timeLabel.add(timeIcon);
+    timeLabel.add(timeText);
+    timeLabel.setPosition((panelRect.x + panelRect.width)/2 + style.button.size + buttonStep /2, style.label.margins.top);
+    ui.add(this.timeLabel);
 
     const maker = new MakerButtonBuilder(ui, style.button);
     const buttons = {
-      "player" : Object.keys(this.player.keys)
+      "player" : Object.keys(this.levelPlayer.player.keys)
                  .concat(["pause"])
                  .map((name, i)=>maker.makeButton(buttonPos[i], name)),
       "editor" : Object.keys(this.editor.keys)
@@ -188,11 +259,11 @@ export default class SceneUI
     Object.keys(buttons).forEach((key)=>{
       buttons[key].forEach((button)=>{
         this.buttons[key][button.name] = button;
+        ui.add(button);
       });
     });
 
     ui.setPosition(bounds.x, bounds.y);
-
   }
 
   update()
@@ -202,11 +273,11 @@ export default class SceneUI
     {
       const isDown = (a)=> a.isDown;
       const playerKeys = {
-        "left" :  { isDown: this.player.keys.left.some(isDown)  || this.buttons.player.left.isDown},
-        "right" : { isDown: this.player.keys.right.some(isDown) || this.buttons.player.right.isDown},
-        "up" :    { isDown: this.player.keys.up.some(isDown)    || this.buttons.player.up.isDown}
+        "left" :  { isDown: this.levelPlayer.player.keys.left.some(isDown)  || this.buttons.player.left.isDown},
+        "right" : { isDown: this.levelPlayer.player.keys.right.some(isDown) || this.buttons.player.right.isDown},
+        "up" :    { isDown: this.levelPlayer.player.keys.up.some(isDown)    || this.buttons.player.up.isDown}
       };
-      this.player.update(playerKeys);
+      this.levelPlayer.player.update(playerKeys);
     } else {
       const pointer = this.scene.input.activePointer;
       this.editor.update(pointer);
@@ -260,6 +331,20 @@ export default class SceneUI
     // {
     //   this.editor.setMode(SceneTileEditor.Mode[object.name]);
     // }
+  }
+
+  updateCoins(coins)
+  {
+    console.log(coins);
+    this.coinsLabel.getByName("label").text = coins.collected +"/"+coins.total;
+  }
+
+  updateTime(time)
+  {
+    console.log(time);
+    const seconds = time/60 |0;
+    const mseconds = time%60;
+    this.timeLabel.getByName("label").text = seconds +":"+mseconds;
   }
 
   destroy()
