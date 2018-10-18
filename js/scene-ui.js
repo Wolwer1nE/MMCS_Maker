@@ -105,7 +105,9 @@ export default class SceneUI
     {
       button.visible = true;
     });
-    this.switched = true;
+
+    this.editor.setEditing(this.mode == SceneUI.Mode.editor);
+    this.marker.setVisible(this.mode == SceneUI.Mode.editor);
   }
 
   initUI(ui, bounds, style)

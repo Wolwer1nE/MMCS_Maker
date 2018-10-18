@@ -10,8 +10,8 @@ export default class SceneTileEditor
     this.map = map;
     this.scene = scene;
     this.editedLayer = editedLayer;
-    editedLayer.setInteractive();
-    editedLayer.on("pointerdown", this.onPointerDown, this);
+    this.editedLayer.setInteractive();
+    this.setEditing(true);
 
     SceneTileEditor.Mode =
     {
@@ -19,7 +19,6 @@ export default class SceneTileEditor
       {
         tile: 16,
         sprite: scene.add.sprite(0,0,"tilesSheet", 15) // IS THIS A LEAK?!
-                  .setAlpha(0.5)
                   .setOrigin(0,0)
                   .setVisible(false),
         hotkey: Phaser.Input.Keyboard.KeyCodes.ONE
@@ -28,7 +27,6 @@ export default class SceneTileEditor
       {
         tile: 11,
         sprite: scene.add.sprite(0,0,"tilesSheet", 10) // IS THIS A LEAK?!
-                  .setAlpha(0.5)
                   .setOrigin(0,0)
                   .setVisible(false),
         hotkey: Phaser.Input.Keyboard.KeyCodes.TWO
@@ -110,15 +108,34 @@ export default class SceneTileEditor
     return tile == null;
   }
 
+  putTile(tileId, worldPosition)
+  {
+    const tile = this.editedLayer.putTileAtWorldXY(tileId, worldPosition.x, worldPosition.y)
+    if (this.mode == SceneTileEditor.Mode.brick)
+    {
+      tile.setCollision(true);
+      tile.properties = {collides:true};
+    }
+  }
+
   canRemove(tile)
   {
     return tile != null &&
-           tile.properties.collides &&
-           tile.index != SceneTileEditor.ConcreteTile;
+           (tile.index == SceneTileEditor.Mode.coin.tile ||
+            tile.index == SceneTileEditor.Mode.brick.tile);
   }
 
-  onPointerDown(pointer) {
+  setEditing(avaliable)
+  {
+    if (avaliable){
+      this.editedLayer.on("pointerdown", this.onPointerDown, this);
+    } else {
+      this.editedLayer.off("pointerdown", this.onPointerDown, this);
+    }
+  }
 
+  onPointerDown(pointer)
+  {
     const worldPoint = pointer.positionToCamera(this.scene.cameras.main);
     const tileUnderPointer = this.editedLayer.getTileAtWorldXY(worldPoint.x, worldPoint.y);
     if (this.mode == SceneTileEditor.Mode.erase)
@@ -130,13 +147,6 @@ export default class SceneTileEditor
     {
       this.putTile(this.mode.tile, worldPoint);
     }
-  }
-
-  putTile(tileId, worldPosition)
-  {
-    const tile = this.editedLayer.putTileAtWorldXY(tileId, worldPosition.x, worldPosition.y)
-    tile.setCollision(true);
-    tile.properties = {collides:true};
   }
 
   destroy()

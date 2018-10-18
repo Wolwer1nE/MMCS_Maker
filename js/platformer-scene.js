@@ -1,6 +1,7 @@
 import Player from "./player.js";
 import SceneUI from "./scene-ui.js";
 import SceneTileEditor from "./scene-tile-editor.js";
+import ScenePlayer from "./scene-player.js";
 
 /**
  * A class that extends Phaser.Scene and wraps up the core logic for the platformer level.
@@ -27,22 +28,26 @@ export default class PlatformerScene extends Phaser.Scene {
       }
     );
 
-    this.load.tilemapTiledJSON("map", "./assets/tilemaps/test_1.json");
+    this.load.tilemapTiledJSON("map", "./assets/tilemaps/scienceFair2018_template.json");
   }
 
   create() {
     this.isPaused = false;
     this.isEditing = true;
 
-    const map = this.make.tilemap({ key: "map" });
+    const map = this.map = this.make.tilemap({ key: "map" });
     const tiles = map.addTilesetImage("smb", "tiles");
 
-    //map.createDynamicLayer("Background", tiles);
-    //map.createDynamicLayer("Foreground", tiles);
+    map.createStaticLayer("Background", tiles);
+
     this.groundLayer = map.createDynamicLayer("Ground", tiles);
 
     // get collision tiles
     this.groundLayer.setCollisionByProperty({ collides: true });
+    this.groundLayer.forEachTile( tile => {
+      if (tile.properties.collidesTop != null)
+        tile.collideUp = tile.properties.collidesTop
+    });
     // No bottom
     this.physics.world.setBounds(0, 0, this.physics.world.bounds.width, this.physics.world.bounds.height,
       true, true, true, false);
@@ -59,14 +64,32 @@ export default class PlatformerScene extends Phaser.Scene {
 //    this.cameras.main.startFollow(this.player.sprite);
 //    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
+
+    const foreground = map.createStaticLayer("Foreground", tiles);
+    foreground.forEachTile(tile => {
+      if (tile.properties.collides)
+      {
+        if (tile.properties.collidesTop != null)
+          tile.collideUp = tile.properties.collidesTop;
+        else {
+          tile.collideUp = true;
+        }
+        tile.collideDown = true;
+        tile.collideLeft = true;
+        tile.collideRight = true;
+      }
+    });
+    this.physics.world.addCollider(this.player.sprite, foreground);
+
+    map.setLayer("Ground");
     this.editor = new SceneTileEditor(this, this.groundLayer, map);
+    this.playerS = new ScenePlayer(this, map, SceneTileEditor.Mode.coin.tile);
 
     this.ui = new SceneUI(this,
       new Phaser.Geom.Rectangle(0,this.groundLayer.height,this.game.canvas.width,this.game.canvas.height-this.groundLayer.height),
       this.editor, this.player
     );
 
-    //map.createFromObjects("Objects","coin",{ key:"tiles" }, this);
 }
 
   update(time, delta) {
@@ -81,7 +104,7 @@ export default class PlatformerScene extends Phaser.Scene {
    }
    else if(
      Phaser.Math.Distance.Between(this.player.sprite.x,this.player.sprite.y,
-                                  this.finish.x, this.finish.y) < this.player.sprite.width / 2
+                                  this.finish.x, this.finish.y) < this.map.tileWidth
    ) {
      this.restart();
    }

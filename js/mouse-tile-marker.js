@@ -26,6 +26,7 @@ export default class MouseTileMarker {
     if(newVisible == this.visible) return;
 
     this.visible = newVisible;
+
     this.graphics.visible = this.visible;
     if (this.sprite)
       this.sprite.visible = this.visible;
@@ -61,18 +62,24 @@ export default class MouseTileMarker {
   {
     if (this.sprite == newSprite) return;
 
-    if (this.sprite != null)
+    var pos = null;
+    if (this.sprite)
     {
       this.sprite.setVisible(false);
-      this.sprite.setPosition(0,0);
+      //this.sprite.setPosition(0,0);
+      pos = this.sprite.position;
     }
 
     this.graphics.visible = false;
 
+
     this.sprite = newSprite;
-    if (newSprite != null)
+    if (newSprite)
     {
       newSprite.setVisible(this.visible);
+      newSprite.setAlpha(0.5)
+      if (pos)
+        newSprite.setPosition(pos.x,pos.y);
       this.graphics = this.normal;
     }
     else
