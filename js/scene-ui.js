@@ -335,16 +335,15 @@ export default class SceneUI
 
   updateCoins(coins)
   {
-    console.log(coins);
     this.coinsLabel.getByName("label").text = coins.collected +"/"+coins.total;
   }
 
   updateTime(time)
   {
-    console.log(time);
     const seconds = time/60 |0;
     const mseconds = time%60;
-    this.timeLabel.getByName("label").text = seconds +":"+mseconds;
+    this.timeLabel.getByName("label").text = (seconds<10 ? "0"+seconds : seconds) + ":" +
+                                             (mseconds<10 ? "0"+mseconds : mseconds);
   }
 
   destroy()

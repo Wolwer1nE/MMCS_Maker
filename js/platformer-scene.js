@@ -52,8 +52,8 @@ export default class PlatformerScene extends Phaser.Scene {
     this.levelPlayer.player.on(Player.Events.win, this.restart, this);
     this.levelPlayer.player.on(Player.Events.death, this.lose, this);
 
-    const foreground = map.createStaticLayer("Foreground", tiles);
-    map.setLayer("Ground");
+    //const foreground = map.createStaticLayer("Foreground", tiles);
+    //map.setLayer("Ground");
 
     this.ui = new SceneUI(this,
       new Phaser.Geom.Rectangle(
