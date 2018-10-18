@@ -1,17 +1,17 @@
 /**
 */
-import SceneTileEditor from "./scene-tile-editor.js";
+import SceneTilelevelEditor from "./scene-tile-editor.js";
 import ScenePlayer from "./scene-player.js";
 import MakerButtonBuilder from "./maker-button-builder.js";
 import MouseTileMarker from "./mouse-tile-marker.js";
 
 export default class SceneUI
 {
-  constructor(scene, bounds, editor, levelPlayer)
+  constructor(scene, bounds, levelEditor, levelPlayer)
   {
     this.scene = scene;
     this.bounds = bounds;
-    this.editor = editor;
+    this.levelEditor = levelEditor;
     this.levelPlayer = levelPlayer;
 
     this.style = {
@@ -59,8 +59,8 @@ export default class SceneUI
           bottom: -2,
           right: -2,
         },
-        width: editor.editedLayer.tilemap.tileWidth,
-        height: editor.editedLayer.tilemap.tileHeight,
+        width: levelEditor.editedLayer.tilemap.tileWidth,
+        height: levelEditor.editedLayer.tilemap.tileHeight,
         borderWidth: 2,
         borderColor: {
           normal: 0xffffff,
@@ -72,7 +72,7 @@ export default class SceneUI
     SceneUI.Mode =
     {
       "player" : "player",
-      "editor" : "editor"
+      "levelEditor" : "levelEditor"
     };
     Object.freeze();
 
@@ -81,14 +81,14 @@ export default class SceneUI
 
     const marker = this.marker = new MouseTileMarker(scene, this.style.marker);
 
-    editor.editedLayer.on(SceneTileEditor.Events.modeChanged,
+    levelEditor.editedLayer.on(SceneTilelevelEditor.Events.modeChanged,
       event => marker.setSprite(event.mode.sprite));
-    editor.editedLayer.on(SceneTileEditor.Events.pointerOut,
+    levelEditor.editedLayer.on(SceneTilelevelEditor.Events.pointerOut,
       event => marker.setVisible(false));
-    editor.editedLayer.on(SceneTileEditor.Events.pointerOver,
+    levelEditor.editedLayer.on(SceneTilelevelEditor.Events.pointerOver,
       event => marker.setVisible(true));
 
-    editor.editedLayer.on(SceneTileEditor.Events.tileChanged, marker.updateFor, marker);
+    levelEditor.editedLayer.on(SceneTilelevelEditor.Events.tileChanged, marker.updateFor, marker);
     levelPlayer.on(ScenePlayer.Events.coinCollected,
     coins => this.updateCoins(coins));
     levelPlayer.on(ScenePlayer.Events.timerUpdated, this.updateTime, this);
@@ -102,8 +102,8 @@ export default class SceneUI
     scene.input.on("pointerup", this.onPointerUp, this);
     scene.input.keyboard.on("keydown", this.onKeyboardDown, this);
 
-    this.setMode(SceneUI.Mode.editor);
-    this.editor.setMode(SceneTileEditor.Mode.brick);
+    this.setMode(SceneUI.Mode.levelEditor);
+    this.levelEditor.setMode(SceneTilelevelEditor.Mode.brick);
   }
 
   setMode(newMode)
@@ -121,17 +121,20 @@ export default class SceneUI
       button.visible = true;
     });
 
-    this.editor.setEditing(this.mode == SceneUI.Mode.editor);
-    this.marker.setVisible(this.mode == SceneUI.Mode.editor);
+    this.levelEditor.setEditing(this.mode == SceneUI.Mode.levelEditor);
+    this.marker.setVisible(this.mode == SceneUI.Mode.levelEditor);
     this.timeLabel.visible = this.mode == SceneUI.Mode.player;
     this.coinsLabel.visible = this.mode == SceneUI.Mode.player;
 
     if (this.mode == SceneUI.Mode.player)
     {
+      this.levelEditor.saveLevelData();
       this.levelPlayer.startLevel();
     }
     else
       this.levelPlayer.resetLevel();
+
+    this.scene.resetLevelData();
   }
 
   initUI(ui, bounds, style)
@@ -190,7 +193,8 @@ export default class SceneUI
                       y+style.button.borderWidth);
       underlay.strokePath();
 
-      if (this.scene.sys.game.device.os.desktop)
+      if (!this.scene.sys.game.device.os.iOs &&
+          !this.scene.sys.game.device.os.android)
       {
         const hotkey = Number(i) + 1;
         ui.add(this.scene.add.text(
@@ -205,8 +209,8 @@ export default class SceneUI
 
     const coinsLabel = this.coinsLabel = this.scene.add.container();
     const coinsIcon = this.scene.add.sprite( 0, 0,
-      SceneTileEditor.Mode.coin.sprite.texture.key,
-      SceneTileEditor.Mode.coin.sprite.frame.name)
+      SceneTilelevelEditor.Mode.coin.sprite.texture.key,
+      SceneTilelevelEditor.Mode.coin.sprite.frame.name)
       .setOrigin(0,0)
       .setScale(0.75);
     const coinsText = this.scene.add.text(
@@ -222,14 +226,14 @@ export default class SceneUI
 
     const timeLabel = this.timeLabel = this.scene.add.container();
     const timeIconShadow = this.scene.add.sprite( 0, 0,
-      SceneTileEditor.Mode.coin.sprite.texture.key,
+      SceneTilelevelEditor.Mode.coin.sprite.texture.key,
       "18")
       .setOrigin(0,0)
       .setScale(0.75)
       .setTint(0)
       .setPosition(style.label.shadow.offsetX, style.label.shadow.offsetY);
     const timeIcon = this.scene.add.sprite( 0, 0,
-      SceneTileEditor.Mode.coin.sprite.texture.key,
+      SceneTilelevelEditor.Mode.coin.sprite.texture.key,
       "18")
       .setOrigin(0,0)
       .setScale(0.75);
@@ -250,12 +254,12 @@ export default class SceneUI
       "player" : Object.keys(this.levelPlayer.player.keys)
                  .concat(["pause"])
                  .map((name, i)=>maker.makeButton(buttonPos[i], name)),
-      "editor" : Object.keys(this.editor.keys)
+      "levelEditor" : Object.keys(this.levelEditor.keys)
                  .concat(["play"])
                  .map((name, i)=>maker.makeButton(buttonPos[i], name))
     }
 
-    this.buttons = { "player": Object(), "editor": Object() };
+    this.buttons = { "player": Object(), "levelEditor": Object() };
     Object.keys(buttons).forEach((key)=>{
       buttons[key].forEach((button)=>{
         this.buttons[key][button.name] = button;
@@ -280,7 +284,8 @@ export default class SceneUI
       this.levelPlayer.player.update(playerKeys);
     } else {
       const pointer = this.scene.input.activePointer;
-      this.editor.update(pointer);
+      this.levelEditor.update(pointer);
+      this.levelPlayer.player.update();
     }
   }
 
@@ -298,16 +303,16 @@ export default class SceneUI
 
   onObjectUp(pointer, object)
   {
-    if(SceneTileEditor.Mode.hasOwnProperty(object.name))
+    if(SceneTilelevelEditor.Mode.hasOwnProperty(object.name))
     {
-      this.editor.setMode(SceneTileEditor.Mode[object.name]);
+      this.levelEditor.setMode(SceneTilelevelEditor.Mode[object.name]);
     }
-    else if (object == this.buttons.editor.play ||
+    else if (object == this.buttons.levelEditor.play ||
              object == this.buttons.player.pause)
     {
-      this.setMode(this.mode == SceneUI.Mode.editor ?
+      this.setMode(this.mode == SceneUI.Mode.levelEditor ?
         SceneUI.Mode.player :
-        SceneUI.Mode.editor
+        SceneUI.Mode.levelEditor
       );
     }
   }
@@ -316,21 +321,16 @@ export default class SceneUI
   {
     if(event.keyCode == this.modeSwitch.keyCode)
     {
-      this.setMode(this.mode == SceneUI.Mode.editor ?
+      this.setMode(this.mode == SceneUI.Mode.levelEditor ?
         SceneUI.Mode.player :
-        SceneUI.Mode.editor
+        SceneUI.Mode.levelEditor
       );
     }
-    else  if (this.mode == SceneUI.Mode.editor) {
-
-      const editorMode = Object.values(SceneTileEditor.Mode).find((x) => {return x.hotkey == event.keyCode});
-      if (editorMode)
-       this.editor.setMode(editorMode);
+    else  if (this.mode == SceneUI.Mode.levelEditor) {
+      const levelEditorMode = Object.values(SceneTilelevelEditor.Mode).find((x) => {return x.hotkey == event.keyCode});
+      if (levelEditorMode)
+        this.levelEditor.setMode(levelEditorMode);
     }
-    // if(SceneTileEditor.Mode.values(object.name))
-    // {
-    //   this.editor.setMode(SceneTileEditor.Mode[object.name]);
-    // }
   }
 
   updateCoins(coins)

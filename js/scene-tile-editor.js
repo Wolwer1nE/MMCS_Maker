@@ -66,6 +66,21 @@ export default class SceneTileEditor
     this.editedLayer.emit(SceneTileEditor.Events.modeChanged, {editor:this, mode:this.mode});
   }
 
+  setEditing(avaliable)
+  {
+    if (avaliable){
+      this.editedLayer.on("pointerdown", this.onPointerDown, this);
+    } else {
+      this.editedLayer.off("pointerdown", this.onPointerDown, this);
+    }
+  }
+
+  saveLevelData()
+  {
+    // strip levelData to tile indexes
+    Cookies.set('levelData', this.editedLayer.layer.data.map(x=>x.map(y=>y.index)));
+  }
+
   update(pointer)
   {
     const worldPoint = pointer.positionToCamera(this.scene.cameras.main);
@@ -125,15 +140,6 @@ export default class SceneTileEditor
             tile.index == SceneTileEditor.Mode.brick.tile);
   }
 
-  setEditing(avaliable)
-  {
-    if (avaliable){
-      this.editedLayer.on("pointerdown", this.onPointerDown, this);
-    } else {
-      this.editedLayer.off("pointerdown", this.onPointerDown, this);
-    }
-  }
-
   onPointerDown(pointer)
   {
     const worldPoint = pointer.positionToCamera(this.scene.cameras.main);
@@ -147,6 +153,7 @@ export default class SceneTileEditor
     {
       this.putTile(this.mode.tile, worldPoint);
     }
+    this.saveLevelData();
   }
 
   destroy()

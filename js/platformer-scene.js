@@ -19,14 +19,11 @@ export default class PlatformerScene extends Phaser.Scene {
         spacing: 2
       }
     );
-    //this.load.image("spike", "./assets/images/0x72-industrial-spike.png");
     this.load.image("tiles", "./assets/tilesets/smb.png");
-    this.load.spritesheet("tilesSheet", "./assets/tilesets/smb.png",
-    {
-        frameWidth: 32,
-        frameHeight: 32
-      }
-    );
+    this.load.spritesheet("tilesSheet", "./assets/tilesets/smb.png", {
+      frameWidth: 32,
+      frameHeight: 32
+    });
 
     this.load.tilemapTiledJSON("map", "./assets/tilemaps/scienceFair2018_template.json");
   }
@@ -47,13 +44,11 @@ export default class PlatformerScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, this.physics.world.bounds.width, this.physics.world.bounds.height,
       true, true, true, false);
 
+    this.resetLevelData();
     this.editor = new SceneTileEditor(this, this.groundLayer, map);
     this.levelPlayer = new ScenePlayer(this, map, SceneTileEditor.Mode.coin.tile);
     this.levelPlayer.player.on(Player.Events.win, this.restart, this);
     this.levelPlayer.player.on(Player.Events.death, this.lose, this);
-
-    //const foreground = map.createStaticLayer("Foreground", tiles);
-    //map.setLayer("Ground");
 
     this.ui = new SceneUI(this,
       new Phaser.Geom.Rectangle(
@@ -63,8 +58,26 @@ export default class PlatformerScene extends Phaser.Scene {
         this.game.canvas.height - this.groundLayer.height),
       this.editor, this.levelPlayer
     );
+  }
 
-}
+  resetLevelData()
+  {
+    const levelData = Cookies.getJSON('levelData');
+    console.log(levelData);
+    if (levelData == null) return;
+    for(var i = 0; i < levelData.length; ++i)
+    for(var j = 0; j < levelData[i].length; ++j)
+    {
+      const tile = this.groundLayer.putTileAt(levelData[i][j], j, i);
+      // if (tile.index == SceneTileEditor.Mode.brick.tile)
+      // {
+      //   tile.setCollision(true);
+      //   tile.properties = {collides:true};
+      // }
+
+    }
+    this.groundLayer.setCollisionByProperty({ collides: true });
+  }
 
   update(time, delta) {
     if (this.isPaused) return;

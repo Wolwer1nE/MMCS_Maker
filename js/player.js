@@ -65,24 +65,35 @@ export default class Player extends Phaser.Events.EventEmitter
     this.sprite.body.moves = false;
   }
 
+  reset(position) {
+    this.sprite.setPosition(position.x, position.y);
+    this.sprite.setAccelerationX(0);
+    this.sprite.setVelocityX(0);
+    this.sprite.setAccelerationY(0);
+    this.sprite.setVelocityY(0);
+  }
+
   update(keys) {
     const sprite = this.sprite;
     const onGround = sprite.body.blocked.down;
     const acceleration = onGround ? 600 : 200;
 
-    if (keys.left.isDown) {
-      sprite.setAccelerationX(-acceleration);
-      sprite.setFlipX(true);
-    } else if (keys.right.isDown) {
-      sprite.setAccelerationX(acceleration);
-      sprite.setFlipX(false);
-    } else {
-      sprite.setAccelerationX(0);
-    }
+    if (keys)
+    {
+      if (keys.left.isDown) {
+        sprite.setAccelerationX(-acceleration);
+        sprite.setFlipX(true);
+      } else if (keys.right.isDown) {
+        sprite.setAccelerationX(acceleration);
+        sprite.setFlipX(false);
+      } else {
+        sprite.setAccelerationX(0);
+      }
 
-    // Only allow the player to jump if they are on the ground
-    if (onGround && keys.up.isDown) {
-      this.sprite.setVelocityY(-500);
+      // Only allow the player to jump if they are on the ground
+      if (onGround && keys.up.isDown) {
+        this.sprite.setVelocityY(-500);
+      }
     }
 
     // Update the animation/texture based on the state of the player

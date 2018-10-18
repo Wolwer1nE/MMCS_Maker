@@ -10,11 +10,9 @@ export default class ScenePlayer extends Phaser.Events.EventEmitter
     this.scene = scene;
     this.map = map;
     this.collectible = coinIndex
-    //this.playedLayer = map.createBlankDynamicLayer("playedLayer", "map");
-    //this.playedLayer.putTilesAt(playedLayer.getTilesWithin());
 
     // Instantiate a player instance at the location of the "Spawn Point" object in the Tiled map
-    const spawnPoint = map.findObject("Objects", obj => obj.name === "spawnPoint");
+    const spawnPoint = this.spawnPoint = map.findObject("Objects", obj => obj.name === "spawnPoint");
     const player = this.player = new Player(scene, spawnPoint.x, spawnPoint.y);
     scene.physics.world.addCollider(player.sprite, map.layer.tilemapLayer);
     player.sprite.body.collideWorldBounds = true;
@@ -55,10 +53,12 @@ export default class ScenePlayer extends Phaser.Events.EventEmitter
   startLevel()
   {
     this.levelStarted = true;
+
     this.coinsCollected = 0;
     this.coinsTotal = this.map.filterTiles( tile => tile.index == this.collectible).length;
-    this.emit(ScenePlayer.Events.coinCollected, {collected: this.coinsCollected, total:this.coinsTotal});
     this.map.setTileIndexCallback(this.collectible, this.onCoinTouched, this, this.map.layer.tilemapLayer);
+    this.emit(ScenePlayer.Events.coinCollected, {collected: this.coinsCollected, total:this.coinsTotal});
+
     this.startTimer();
   }
 
@@ -66,6 +66,7 @@ export default class ScenePlayer extends Phaser.Events.EventEmitter
   {
     if (!this.levelStarted) return;
     this.levelStarted = false;
+    this.player.reset(this.spawnPoint);
     this.stopTimer();
   }
 
@@ -95,7 +96,6 @@ export default class ScenePlayer extends Phaser.Events.EventEmitter
 
   onTimerUpdate()
   {
-    console.log(this.time / 60 | 0 , this.time % 60);
     this.time += 1;
     this.emit(ScenePlayer.Events.timerUpdated, this.time);
   }
