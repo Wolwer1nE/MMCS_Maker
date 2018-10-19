@@ -1,15 +1,16 @@
 /**
 */
-import SceneTilelevelEditor from "./scene-tile-editor.js";
+import SceneTileEditor from "./scene-tile-editor.js";
 import ScenePlayer from "./scene-player.js";
 import Player from "./player.js";
 import MakerButtonBuilder from "./maker-button-builder.js";
 import MouseTileMarker from "./mouse-tile-marker.js";
 
-export default class SceneUI
+export default class SceneUI extends Phaser.Events.EventEmitter
 {
   constructor(scene, bounds, levelEditor, levelPlayer)
   {
+    super();
     this.scene = scene;
     this.bounds = bounds;
     this.levelEditor = levelEditor;
@@ -46,11 +47,21 @@ export default class SceneUI
       label: {
         margins: {left: 2, top:2},
         color: "#e86010",
-        fontSize: 24,
-        fontWeight: "bold",
+        font: "22px Menlo",
+        align: "center",
         shadow: {
           offsetX: 2,
           offsetY: 2,
+          fill: true
+        }
+      },
+      popup: {
+        color: "#e86010",
+        font: "bold 18px Arial",
+        align: "center",
+        shadow: {
+          offsetX: 1,
+          offsetY: 1,
           fill: true
         }
       },
@@ -74,7 +85,7 @@ export default class SceneUI
     SceneUI.Mode =
     {
       "player" : "player",
-      "levelEditor" : "levelEditor"
+      "editor" : "editor"
     };
     Object.freeze();
 
@@ -83,19 +94,18 @@ export default class SceneUI
 
     const marker = this.marker = new MouseTileMarker(scene, this.style.marker);
 
-    levelEditor.editedLayer.on(SceneTilelevelEditor.Events.modeChanged,
+    levelEditor.on(SceneTileEditor.Events.modeChanged,
       event => marker.setSprite(event.mode.sprite));
-    levelEditor.editedLayer.on(SceneTilelevelEditor.Events.pointerOut,
+    levelEditor.on(SceneTileEditor.Events.pointerOut,
       event => marker.setVisible(false));
-    levelEditor.editedLayer.on(SceneTilelevelEditor.Events.pointerOver,
+    levelEditor.on(SceneTileEditor.Events.pointerOver,
       event => marker.setVisible(true));
 
-    levelEditor.editedLayer.on(SceneTilelevelEditor.Events.tileChanged, marker.updateFor, marker);
-    
+    levelEditor.on(SceneTileEditor.Events.tileChanged, marker.updateFor, marker);
+
     levelPlayer.on(ScenePlayer.Events.coinCollected,this.updateCoins, this);
     levelPlayer.on(ScenePlayer.Events.timerUpdated, this.updateTime, this);
-    levelPlayer.player.on(Player.Events.win, this.showWinDialog, this);
-    
+
     scene.input.addPointer();
     scene.input.addPointer();
     this.modeSwitch = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR);
@@ -105,8 +115,8 @@ export default class SceneUI
     scene.input.on("pointerup", this.onPointerUp, this);
     scene.input.keyboard.on("keydown", this.onKeyboardDown, this);
 
-    this.setMode(SceneUI.Mode.levelEditor);
-    this.levelEditor.setMode(SceneTilelevelEditor.Mode.brick);
+    this.setMode(SceneUI.Mode.editor);
+    this.levelEditor.setMode(SceneTileEditor.Mode.brick);
   }
 
   setMode(newMode)
@@ -124,8 +134,8 @@ export default class SceneUI
       button.visible = true;
     });
 
-    this.levelEditor.setEditing(this.mode == SceneUI.Mode.levelEditor);
-    this.marker.setVisible(this.mode == SceneUI.Mode.levelEditor);
+    this.levelEditor.setEditing(this.mode == SceneUI.Mode.editor);
+    this.marker.setVisible(this.mode == SceneUI.Mode.editor);
     this.timeLabel.visible = this.mode == SceneUI.Mode.player;
     this.coinsLabel.visible = this.mode == SceneUI.Mode.player;
 
@@ -212,8 +222,8 @@ export default class SceneUI
 
     const coinsLabel = this.coinsLabel = this.scene.add.container();
     const coinsIcon = this.scene.add.sprite( 0, 0,
-      SceneTilelevelEditor.Mode.coin.sprite.texture.key,
-      SceneTilelevelEditor.Mode.coin.sprite.frame.name)
+      SceneTileEditor.Mode.coin.sprite.texture.key,
+      SceneTileEditor.Mode.coin.sprite.frame.name)
       .setOrigin(0,0)
       .setScale(0.75);
     const coinsText = this.scene.add.text(
@@ -229,14 +239,14 @@ export default class SceneUI
 
     const timeLabel = this.timeLabel = this.scene.add.container();
     const timeIconShadow = this.scene.add.sprite( 0, 0,
-      SceneTilelevelEditor.Mode.coin.sprite.texture.key,
+      SceneTileEditor.Mode.coin.sprite.texture.key,
       "18")
       .setOrigin(0,0)
       .setScale(0.75)
       .setTint(0)
       .setPosition(style.label.shadow.offsetX, style.label.shadow.offsetY);
     const timeIcon = this.scene.add.sprite( 0, 0,
-      SceneTilelevelEditor.Mode.coin.sprite.texture.key,
+      SceneTileEditor.Mode.coin.sprite.texture.key,
       "18")
       .setOrigin(0,0)
       .setScale(0.75);
@@ -257,12 +267,12 @@ export default class SceneUI
       "player" : Object.keys(this.levelPlayer.player.keys)
                  .concat(["replay"])
                  .map((name, i)=>maker.makeButton(buttonPos[i], name)),
-      "levelEditor" : Object.keys(this.levelEditor.keys)
+      "editor" : Object.keys(this.levelEditor.keys)
                  .concat(["play"])
                  .map((name, i)=>maker.makeButton(buttonPos[i], name))
     }
 
-    this.buttons = { "player": Object(), "levelEditor": Object() };
+    this.buttons = { "player": Object(), "editor": Object() };
     Object.keys(buttons).forEach((key)=>{
       buttons[key].forEach((button)=>{
         this.buttons[key][button.name] = button;
@@ -273,10 +283,15 @@ export default class SceneUI
     ui.setPosition(bounds.x, bounds.y);
   }
 
-  createPopup(bounds, buttons, style)
+  createPopup(text, buttons, style)
   {
     const ui = this.scene.add.container();
     const panel = this.scene.add.graphics();
+    const {widthInPixels, heightInPixels} = this.scene.map.layers[0];
+    const bounds = new Phaser.Geom.Rectangle(
+      widthInPixels/4, heightInPixels/3,
+      widthInPixels/2, heightInPixels/3
+    );
 
     const panelRect = new Phaser.Geom.Rectangle(
       style.panel.margins.left,
@@ -292,16 +307,16 @@ export default class SceneUI
     panel.lineStyle(style.panel.borderWidth, style.panel.borderColor, style.panel.alpha);
     panel.strokeRoundedRect(panelRect.x, panelRect.y, panelRect.width, panelRect.height,
       style.panel.borderRadius
-    );    
+    );
     ui.add(panel);
-    
+
     const underlay = this.underlay = this.scene.add.graphics();
     const buttonStep = panelRect.width / buttons.length - style.button.size;
     const maker = new MakerButtonBuilder(ui, style.button);
 
     underlay.fillStyle(style.button.fillColor, style.button.alpha);
-    buttons.forEach((name,i) => 
-    {      
+    buttons.forEach((name,i) =>
+    {
       const x = panelRect.x + i*(style.button.size + buttonStep) + buttonStep /2;
       const y = panelRect.y + (panelRect.height + style.button.size)/2;
 
@@ -331,11 +346,21 @@ export default class SceneUI
       maker.makeButton({x: x, y: y}, name).setVisible(true);
     });
     ui.addAt(underlay, 1);
+
+    style.popup.wordWrap = { width: (panelRect.width - buttonStep)};
+    const label = this.scene.add.text(
+      panelRect.width/2, style.button.size,
+      text,
+      style.popup
+    ).setOrigin(0.5, 0.5);
+
+    ui.add(label);
     ui.setPosition(bounds.x, bounds.y);
-    console.log(ui);
+
+    //document.body.appendChild(document.createChild("<a href="+link+">"+link+"</a>"));
     return ui;
   }
-  
+
   update()
   {
     const buttons = this.buttons[this.mode];
@@ -363,37 +388,60 @@ export default class SceneUI
 
   onObjectDown(pointer, object)
   {
+    if (this.scene.isPaused) return;
     object.isDown = true;
     pointer.touchDownInside = object;
   }
 
   onObjectUp(pointer, object)
   {
-    if(SceneTilelevelEditor.Mode.hasOwnProperty(object.name))
-    {
-      this.levelEditor.setMode(SceneTilelevelEditor.Mode[object.name]);
+    if (this.scene.isPaused) {
+      if (this.popup)
+      {
+        switch(object.name)
+        {
+          case "replay":
+            this.setMode(SceneUI.Mode.editor);
+            this.popup.onCancel();
+            break;
+          case "ok":
+            this.popup.onOk();
+            break;
+          default:
+            return;
+        }
+        this.popup.destroy();
+        this.popup = null;
+      }
+      return;
     }
-    else if (object == this.buttons.levelEditor.play ||
+
+    if(SceneTileEditor.Mode.hasOwnProperty(object.name))
+    {
+      this.levelEditor.setMode(SceneTileEditor.Mode[object.name]);
+    }
+    else if (object == this.buttons.editor.play ||
              object == this.buttons.player.replay)
     {
-      this.setMode(this.mode == SceneUI.Mode.levelEditor ?
+      this.setMode(this.mode == SceneUI.Mode.editor ?
         SceneUI.Mode.player :
-        SceneUI.Mode.levelEditor
+        SceneUI.Mode.editor
       );
     }
   }
 
   onKeyboardDown(event)
   {
+    if (this.scene.isPaused) return;
     if(event.keyCode == this.modeSwitch.keyCode)
     {
-      this.setMode(this.mode == SceneUI.Mode.levelEditor ?
+      this.setMode(this.mode == SceneUI.Mode.editor ?
         SceneUI.Mode.player :
-        SceneUI.Mode.levelEditor
+        SceneUI.Mode.editor
       );
     }
-    else  if (this.mode == SceneUI.Mode.levelEditor) {
-      const levelEditorMode = Object.values(SceneTilelevelEditor.Mode).find((x) => {return x.hotkey == event.keyCode});
+    else  if (this.mode == SceneUI.Mode.editor) {
+      const levelEditorMode = Object.values(SceneTileEditor.Mode).find((x) => {return x.hotkey == event.keyCode});
       if (levelEditorMode)
         this.levelEditor.setMode(levelEditorMode);
     }
@@ -411,19 +459,38 @@ export default class SceneUI
     this.timeLabel.getByName("label").text = (seconds<10 ? "0"+seconds : seconds) + ":" +
                                              (mseconds<10 ? "0"+mseconds : mseconds);
   }
-  
-  showWinDialog()
-  {    
 
-    const {widthInPixels, heightInPixels} = this.scene.map.layers[0];
-    const popupBounds = new Phaser.Geom.Rectangle( widthInPixels/4,heightInPixels/3, widthInPixels/2, heightInPixels/3);
-    const popup = this.createPopup(popupBounds, ["replay", "cancel", "ok"],this.style);
-    
+  showWinDialog(text)
+  {
+    this.scene.isPaused = true;
+    return new Promise((success, fail) =>
+    {
+      const popup = this.popup = this.createPopup(
+        text,
+        ["replay", "ok"],
+        this.style
+      );
+      popup.onOk = success;
+      popup.onCancel = fail;
+    });
     //const tint = this.scene.add.graphics();
     //tint.fillStyle(0x0, 0.25);
     //tint.fillRect(-widthInPixels/4,-heightInPixels/3,widthInPixels, 640);
     //popup.add(tint, 0);
-  
+  }
+
+  showLinkDialog(link)
+  {
+    this.scene.isPaused=true;
+    return new Promise((success, fail) =>
+    {
+      const popup = this.popup = this.createPopup(
+        link,
+        ["ok"],
+        this.style
+      );
+      popup.onOk = success;
+    });
   }
 
   destroy()

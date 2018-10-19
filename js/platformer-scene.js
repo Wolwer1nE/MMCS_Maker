@@ -27,11 +27,11 @@ export default class PlatformerScene extends Phaser.Scene {
     });
 
     this.load.tilemapTiledJSON("map", "./assets/tilemaps/scienceFair2018_template.json");
-    
+
     this.backend = new BackendPromise("http://www.rndgd.ru/api/levels", 1);
   }
 
-  create() 
+  create()
   {
     this.isPaused = false;
     this.isEditing = true;
@@ -59,7 +59,6 @@ export default class PlatformerScene extends Phaser.Scene {
         this.game.canvas.height - this.groundLayer.height),
       this.editor, this.levelPlayer
     );
-    this.ui.showWinDialog();
   }
 
   resetLevelData(zipped)
@@ -68,7 +67,7 @@ export default class PlatformerScene extends Phaser.Scene {
     if (rawData == null) return;
     if (zipped)
       rawData = LZString.decompressFromUTF16(rawData);
-    
+
     const levelData = JSON.parse(rawData);
     if (levelData == null) return;
 
@@ -82,33 +81,40 @@ export default class PlatformerScene extends Phaser.Scene {
   update(time, delta) {
     if (this.isPaused) return;
     this.ui.update();
-
     this.levelPlayer.update(time,delta);
   }
-  
+
   win()
   {
     this.isPaused = true;
     const cam = this.cameras.main;
-    cam.fade(250, 0, 0, 0);
-    
+
     this.levelPlayer.player.freeze();
-    
+    this.ui.showWinDialog("Вы успешно создали уровень!\nХотите сохранить его?").then(
+      () => this.sendLevelData(),
+      () => this.restart()
+    );
+
+  }
+
+  sendLevelData()
+  {
     const rawData = localStorage.getItem("levelData");
     if (rawData != null)
     {
-      this.backend.send(rawData).then( 
-        (response)=> {
-          console.log(response);
-          this.restart();
+      this.backend.send(rawData).then(
+        (response) => {
+          //this.backend.shorten(window.location.href+"?level="+response.id).then(
+          response = JSON.parse(response);
+          this.ui.showLinkDialog(window.location.href+"?level="+response.id).then(
+                 () => this.restart())
         },
-        (error)=>{
+        (error) => {
           console.log(error);
           this.restart();
         }
       );
     }
-    
   }
 
   lose()

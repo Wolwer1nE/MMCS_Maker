@@ -40,9 +40,5 @@ const config = {
     }]
   }
 };
-<<<<<<< HEAD
-
-=======
 localStorage.removeItem("levelData");
->>>>>>> 4d3c217b9298f30734dc4dfc9b294a7bb23bed09
 const game = new Phaser.Game(config);

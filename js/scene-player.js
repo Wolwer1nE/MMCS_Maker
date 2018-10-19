@@ -40,6 +40,7 @@ export default class ScenePlayer extends Phaser.Events.EventEmitter
       this.player.sprite.x, this.player.sprite.y,
       this.finish.x, this.finish.y) < this.map.tileWidth)
     {
+      this.stopTimer();
       this.player.emit(Player.Events.win);
     }
   }

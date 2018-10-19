@@ -3,10 +3,11 @@
 
 import MouseTileMarker from "./mouse-tile-marker.js";
 
-export default class SceneTileEditor
+export default class SceneTileEditor extends Phaser.Events.EventEmitter
 {
   constructor(scene, editedLayer, map)
   {
+    super();
     this.map = map;
     this.scene = scene;
     this.editedLayer = editedLayer;
@@ -14,7 +15,6 @@ export default class SceneTileEditor
     this.setEditing(true);
 
     this.finish = map.findObject("Objects", obj => obj.name === "finishPoint");
-    //this.archiver = new jsscompress.Hauffman()
 
     SceneTileEditor.Mode =
     {
@@ -66,7 +66,7 @@ export default class SceneTileEditor
   {
     if (this.mode == newMode)return;
     this.mode = newMode;
-    this.editedLayer.emit(SceneTileEditor.Events.modeChanged, {editor:this, mode:this.mode});
+    this.emit(SceneTileEditor.Events.modeChanged, {editor:this, mode:this.mode});
   }
 
   setEditing(avaliable)
@@ -107,13 +107,13 @@ export default class SceneTileEditor
         if (this.pointerOver) {
           this.pointerOut = true;
           this.pointerOver = false;
-          this.editedLayer.emit(SceneTileEditor.Events.pointerOut, {editor:this, pointer: pointer});
+          this.emit(SceneTileEditor.Events.pointerOut, {editor:this, pointer: pointer});
         }
         return;
       } else if (this.pointerOut) {
         this.pointerOut = false;
         this.pointerOver = true;
-        this.editedLayer.emit(SceneTileEditor.Events.pointerOver, {editor:this, pointer: pointer});
+        this.emit(SceneTileEditor.Events.pointerOver, {editor:this, pointer: pointer});
       }
 
     const tileUnderPointer = this.editedLayer.getTileAtWorldXY(worldPoint.x, worldPoint.y);
@@ -122,7 +122,7 @@ export default class SceneTileEditor
       const tilePos = this.editedLayer.tilemap.worldToTileXY(worldPoint.x, worldPoint.y);
       const snappedWorldPoint = this.map.tileToWorldXY(tilePos.x, tilePos.y);
 
-      this.editedLayer.emit(SceneTileEditor.Events.tileChanged, {
+      this.emit(SceneTileEditor.Events.tileChanged, {
         editor: this,
         mode: this.mode,
         tilePos: snappedWorldPoint,
