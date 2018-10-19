@@ -2,6 +2,7 @@ import Player from "./player.js";
 import SceneUI from "./scene-ui.js";
 import SceneTileEditor from "./scene-tile-editor.js";
 import ScenePlayer from "./scene-player.js";
+import BackendPromise from "./backend-promise.js";
 
 /**
  * A class that extends Phaser.Scene and wraps up the core logic for the platformer level.
@@ -26,9 +27,12 @@ export default class PlatformerScene extends Phaser.Scene {
     });
 
     this.load.tilemapTiledJSON("map", "./assets/tilemaps/scienceFair2018_template.json");
+    
+    this.backend = new BackendPromise("http://www.rndgd.ru/api/levels", 1);
   }
 
-  create() {
+  create() 
+  {
     this.isPaused = false;
     this.isEditing = true;
 
@@ -44,7 +48,7 @@ export default class PlatformerScene extends Phaser.Scene {
 
     this.editor = new SceneTileEditor(this, this.groundLayer, map);
     this.levelPlayer = new ScenePlayer(this, map, SceneTileEditor.Mode.coin.tile);
-    this.levelPlayer.player.on(Player.Events.win, this.restart, this);
+    this.levelPlayer.player.on(Player.Events.win, this.win, this);
     this.levelPlayer.player.on(Player.Events.death, this.lose, this);
 
     this.ui = new SceneUI(this,
@@ -55,6 +59,19 @@ export default class PlatformerScene extends Phaser.Scene {
         this.game.canvas.height - this.groundLayer.height),
       this.editor, this.levelPlayer
     );
+    
+    const rawData = localStorage.getItem("levelData");
+    if (rawData != null)
+    {
+      this.backend.send(rawData).then( 
+        (response)=> {
+          console.log(response);
+        },
+        (error)=>{
+          console.log(error);     
+        }
+      );
+    }
   }
 
   resetLevelData()
@@ -77,6 +94,31 @@ export default class PlatformerScene extends Phaser.Scene {
     this.ui.update();
 
     this.levelPlayer.update(time,delta);
+  }
+  
+  win()
+  {
+    this.isPaused = true;
+    const cam = this.cameras.main;
+    cam.fade(250, 0, 0, 0);
+    
+    this.levelPlayer.player.freeze();
+    
+    const rawData = localStorage.getItem("levelData");
+    if (rawData != null)
+    {
+      this.backend.send(rawData).then( 
+        (response)=> {
+          console.log(response);
+          this.restart();
+        },
+        (error)=>{
+          console.log(error);
+          this.restart();
+        }
+      );
+    }
+    
   }
 
   lose()

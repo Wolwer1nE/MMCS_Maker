@@ -23,6 +23,8 @@ export default class MakerButtonBuilder
 
     switch (name)
     {
+      case "ok":
+        button = this.drawOk("okButton");
       case "pause":
         button = this.drawPause("pauseButton");
         break;
@@ -33,7 +35,7 @@ export default class MakerButtonBuilder
         button = this.drawReplay("replayButton");
         break;
       case "erase":
-        button = this.drawErase("eraseButton");
+        button = this.drawCancel("eraseButton");
         break;
       case "left":
         button = this.drawLeft("leftButton");
@@ -130,6 +132,77 @@ export default class MakerButtonBuilder
     return this.makeSprite(textureKey);
   }
 
+  drawCancel(textureKey)
+  {
+    const button = this.parent.scene.add.graphics();
+    const style = this.style;
+
+    const topLeft =  {x: style.size/ 4, y: style.size/ 4};
+    const bottomRight = {x: style.size/ 4 + style.size/ 2, y: style.size/ 4+ style.size/ 2};
+    const offset = 2 * style.borderWidth;
+
+    const topLeftLeft = {x: topLeft.x, y: topLeft.y + offset};
+    const topLeftRight = {x: topLeft.x + offset, y: topLeft.y};
+    const bottomRightLeft = {x:bottomRight.x - offset, y: bottomRight.y};
+    const bottomRightRight = {x: bottomRight.x, y: bottomRight.y - offset};
+
+    const topRightLeft = {x: bottomRight.x - offset, y: topLeft.y};
+    const bottomLeftRight = {x: topLeft.x + offset, y:bottomRight.y};
+    const bottomLeftLeft = {x: topLeft.x, y: bottomRight.y - offset};
+    const topRightRight = {x:bottomRight.x, y:topLeft.y + offset};
+
+    const centerTop = {x: style.size /2, y: style.size /2 - offset};
+    const centerBottom = {x:style.size /2, y: style.size /2 + offset};
+    const centerLeft = {x:style.size /2 - offset, y: style.size /2};
+    const centerRight = {x:style.size /2 + offset, y: style.size /2};
+
+    button.lineStyle(style.borderWidth, style.highlightColor, style.alpha);
+    button.fillStyle(style.fillColor, style.alpha);
+    button.beginPath();
+
+    button.moveTo(topLeftLeft.x, topLeftLeft.y);
+    button.lineTo(topLeftRight.x, topLeftRight.y);
+    button.lineTo(centerTop.x, centerTop.y);
+    button.lineTo(topRightLeft.x, topRightLeft.y);
+    button.lineTo(topRightRight.x, topRightRight.y);
+    button.lineTo(centerRight.x, centerRight.y);
+    button.lineTo(bottomRightRight.x, bottomRightRight.y);
+    button.lineTo(bottomRightLeft.x, bottomRightLeft.y);
+    button.lineTo(centerBottom.x, centerBottom.y);
+    button.lineTo(bottomLeftRight.x, bottomLeftRight.y);
+    button.lineTo(bottomLeftLeft.x, bottomLeftLeft.y);
+    button.lineTo(centerLeft.x, centerLeft.y);
+    button.closePath();
+
+    button.fillPath();
+    button.strokePath();
+
+    button.lineStyle(style.borderWidth, style.shadowColor, style.alpha);
+    button.beginPath();
+
+    button.moveTo(bottomLeftRight.x, bottomLeftRight.y);
+    button.lineTo(bottomLeftLeft.x, bottomLeftLeft.y);
+    button.lineTo(centerLeft.x, centerLeft.y);
+    button.lineTo(topLeftLeft.x, topLeftLeft.y);
+    button.lineTo(topLeftRight.x, topLeftRight.y);
+    button.lineTo(centerTop.x, centerTop.y);
+    button.lineTo(topRightLeft.x, topRightLeft.y);
+    button.lineTo(topRightRight.x, topRightRight.y);
+
+    button.moveTo(centerRight.x, centerRight.y);
+    button.lineTo(bottomRightRight.x, bottomRightRight.y);
+
+    button.moveTo(centerBottom.x, centerBottom.y);
+    button.lineTo(bottomRightLeft.x, bottomRightLeft.y);
+
+    button.strokePath();
+
+    button.generateTexture(textureKey, style.size, style.size);
+    button.destroy();
+
+    return this.makeSprite(textureKey);
+  }
+  
   drawErase(textureKey)
   {
     const button = this.parent.scene.add.graphics();
