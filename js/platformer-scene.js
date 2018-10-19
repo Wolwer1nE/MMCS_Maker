@@ -44,8 +44,9 @@ export default class PlatformerScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, this.physics.world.bounds.width, this.physics.world.bounds.height,
       true, true, true, false);
 
-    this.resetLevelData();
     this.editor = new SceneTileEditor(this, this.groundLayer, map);
+    //this.resetLevelData();
+
     this.levelPlayer = new ScenePlayer(this, map, SceneTileEditor.Mode.coin.tile);
     this.levelPlayer.player.on(Player.Events.win, this.restart, this);
     this.levelPlayer.player.on(Player.Events.death, this.lose, this);
@@ -62,20 +63,18 @@ export default class PlatformerScene extends Phaser.Scene {
 
   resetLevelData()
   {
-    const levelData = Cookies.getJSON('levelData');
-    console.log(levelData);
-    if (levelData == null) return;
-    for(var i = 0; i < levelData.length; ++i)
-    for(var j = 0; j < levelData[i].length; ++j)
-    {
-      const tile = this.groundLayer.putTileAt(levelData[i][j], j, i);
-      // if (tile.index == SceneTileEditor.Mode.brick.tile)
-      // {
-      //   tile.setCollision(true);
-      //   tile.properties = {collides:true};
-      // }
+    // const rawData = Cookies.get("levelData");
+    // if (rawData == null) return;
+    // var jsonStr = this.editor.archiver.decompress(rawData);
+    // while (!jsonStr.endsWith("]"))
+    //   jsonStr = jsonStr.slice(0, jsonStr.length-1);
 
-    }
+    const levelData = Cookies.getJSON("levelData");
+    if (levelData == null) return;
+    levelData.forEach(t => {
+      const tile = this.groundLayer.putTileAt(t.index, t.x, t.y);
+      tile.properties = t.properties;
+    });
     this.groundLayer.setCollisionByProperty({ collides: true });
   }
 

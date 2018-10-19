@@ -13,6 +13,9 @@ export default class SceneTileEditor
     this.editedLayer.setInteractive();
     this.setEditing(true);
 
+    this.levelData = [];
+    //this.archiver = new jsscompress.Hauffman()
+
     SceneTileEditor.Mode =
     {
       "brick":
@@ -77,8 +80,19 @@ export default class SceneTileEditor
 
   saveLevelData()
   {
-    // strip levelData to tile indexes
-    Cookies.set('levelData', this.editedLayer.layer.data.map(x=>x.map(y=>y.index)));
+    const levelData = [];
+    this.editedLayer.layer.data.forEach( r => {
+      r.forEach( t => {
+        if (t.index != -1)
+          levelData.push({
+            index:t.index,
+            x:t.x, y:t.y,
+            properties:t.properties
+          });
+      });
+    });
+
+    Cookies.set("levelData", JSON.stringify(levelData));
   }
 
   update(pointer)
@@ -147,7 +161,7 @@ export default class SceneTileEditor
     if (this.mode == SceneTileEditor.Mode.erase)
     {
       if (this.canRemove(tileUnderPointer))
-          this.editedLayer.removeTileAtWorldXY(worldPoint.x, worldPoint.y);
+        this.editedLayer.removeTileAtWorldXY(worldPoint.x, worldPoint.y);
     }
     else if (this.canPut(tileUnderPointer))
     {
@@ -158,5 +172,6 @@ export default class SceneTileEditor
 
   destroy()
   {
+    //this.archiver.destroy();
   }
 }
