@@ -13,7 +13,7 @@ export default class SceneTileEditor
     this.editedLayer.setInteractive();
     this.setEditing(true);
 
-    this.levelData = [];
+    this.finish = map.findObject("Objects", obj => obj.name === "finishPoint");
     //this.archiver = new jsscompress.Hauffman()
 
     SceneTileEditor.Mode =
@@ -92,7 +92,8 @@ export default class SceneTileEditor
       });
     });
 
-    Cookies.set("levelData", JSON.stringify(levelData));
+    console.log("save",levelData.length);
+    localStorage.setItem("levelData", LZString.compressToUTF16(JSON.stringify(levelData)));
   }
 
   update(pointer)
@@ -124,7 +125,7 @@ export default class SceneTileEditor
         mode: this.mode,
         tilePos: snappedWorldPoint,
         canRemoveTile: this.canRemove(tileUnderPointer),
-        canPutTile: this.canPut(tileUnderPointer)
+        canPutTile: this.canPut(tileUnderPointer, worldPoint)
       });
       this.previousTile = tileUnderPointer;
     }
@@ -132,9 +133,12 @@ export default class SceneTileEditor
     if(pointer.isDown) this.onPointerDown(pointer);
   }
 
-  canPut(tile)
+  canPut(tile, worldPosition)
   {
-    return tile == null;
+    return tile == null &&
+           Phaser.Math.Distance.Between(
+             worldPosition.x, worldPosition.y,
+             this.finish.x, this.finish.y) > 2.5*this.map.tileWidth;
   }
 
   putTile(tileId, worldPosition)
@@ -145,6 +149,7 @@ export default class SceneTileEditor
       tile.setCollision(true);
       tile.properties = {collides:true};
     }
+    this.saveLevelData();
   }
 
   canRemove(tile)
@@ -154,6 +159,12 @@ export default class SceneTileEditor
             tile.index == SceneTileEditor.Mode.brick.tile);
   }
 
+  removeTile(worldPosition)
+  {
+    this.editedLayer.removeTileAtWorldXY(worldPosition.x, worldPosition.y);
+    this.saveLevelData();
+  }
+
   onPointerDown(pointer)
   {
     const worldPoint = pointer.positionToCamera(this.scene.cameras.main);
@@ -161,13 +172,12 @@ export default class SceneTileEditor
     if (this.mode == SceneTileEditor.Mode.erase)
     {
       if (this.canRemove(tileUnderPointer))
-        this.editedLayer.removeTileAtWorldXY(worldPoint.x, worldPoint.y);
+        this.removeTile(worldPoint);
     }
-    else if (this.canPut(tileUnderPointer))
+    else if (this.canPut(tileUnderPointer, worldPoint))
     {
       this.putTile(this.mode.tile, worldPoint);
     }
-    this.saveLevelData();
   }
 
   destroy()

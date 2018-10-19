@@ -252,7 +252,7 @@ export default class SceneUI
     const maker = new MakerButtonBuilder(ui, style.button);
     const buttons = {
       "player" : Object.keys(this.levelPlayer.player.keys)
-                 .concat(["pause"])
+                 .concat(["replay"])
                  .map((name, i)=>maker.makeButton(buttonPos[i], name)),
       "levelEditor" : Object.keys(this.levelEditor.keys)
                  .concat(["play"])
@@ -308,7 +308,7 @@ export default class SceneUI
       this.levelEditor.setMode(SceneTilelevelEditor.Mode[object.name]);
     }
     else if (object == this.buttons.levelEditor.play ||
-             object == this.buttons.player.pause)
+             object == this.buttons.player.replay)
     {
       this.setMode(this.mode == SceneUI.Mode.levelEditor ?
         SceneUI.Mode.player :

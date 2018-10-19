@@ -29,6 +29,9 @@ export default class MakerButtonBuilder
       case "play":
         button = this.drawPlay("playButton");
         break;
+      case "replay":
+        button = this.drawReplay("replayButton");
+        break;
       case "erase":
         button = this.drawErase("eraseButton");
         break;
@@ -280,6 +283,49 @@ export default class MakerButtonBuilder
     button.beginPath();
     button.moveTo(bottom.x, bottom.y);
     button.lineTo(top.x, top.y);
+    button.strokePath();
+
+    button.generateTexture(textureKey, style.size, style.size);
+    button.destroy();
+
+    return this.makeSprite(textureKey);
+  }
+
+  drawReplay(textureKey)
+  {
+    const button = this.parent.scene.add.graphics();
+    const style = this.style;
+    const topLeft = {x: style.size/ 4,
+                     y: style.size/ 4};
+    const topRight = {x: style.size/ 4 + style.size/ 3,
+                      y: style.size/ 4};
+    const center = {x: style.size/ 2,
+                    y: style.size/ 2};
+    const radiusOut = style.size/ 4;
+    const radiusIn = radiusOut-style.borderWidth*2.8;
+    const startAngle = 2*Phaser.Math.TAU;
+    const endAngle = 0.75*Phaser.Math.TAU;
+
+    button.lineStyle(style.borderWidth, style.shadowColor, style.alpha);
+    button.beginPath();
+    button.arc(center.x, center.y, radiusOut, startAngle,endAngle );
+    button.arc(center.x, center.y, radiusIn, endAngle,startAngle, true );
+    button.lineTo(center.x-style.borderWidth*2, center.y);
+    button.lineTo(center.x-style.borderWidth*5, center.y+style.borderWidth*3);
+    button.lineTo(center.x-style.borderWidth*8, center.y);
+    button.closePath();
+    button.strokePath();
+
+    button.lineStyle(style.borderWidth, style.highlightColor, style.alpha);
+    button.beginPath();
+    button.lineTo(center.x-style.borderWidth*2, center.y);
+    button.lineTo(center.x-style.borderWidth*5, center.y+style.borderWidth*3);
+    button.strokePath();
+    button.beginPath();
+    button.arc(center.x, center.y, radiusIn, startAngle*1.05, 3*Phaser.Math.TAU );
+    button.strokePath();
+    button.beginPath();
+    button.arc(center.x, center.y, radiusOut, endAngle, 3.75*Phaser.Math.TAU, true );
     button.strokePath();
 
     button.generateTexture(textureKey, style.size, style.size);

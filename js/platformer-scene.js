@@ -37,16 +37,12 @@ export default class PlatformerScene extends Phaser.Scene {
 
     map.createStaticLayer("Background", tiles);
     this.groundLayer = map.createDynamicLayer("Ground", tiles);
-
-    // get collision tiles
     this.groundLayer.setCollisionByProperty({ collides: true });
     // No bottom
     this.physics.world.setBounds(0, 0, this.physics.world.bounds.width, this.physics.world.bounds.height,
       true, true, true, false);
 
     this.editor = new SceneTileEditor(this, this.groundLayer, map);
-    //this.resetLevelData();
-
     this.levelPlayer = new ScenePlayer(this, map, SceneTileEditor.Mode.coin.tile);
     this.levelPlayer.player.on(Player.Events.win, this.restart, this);
     this.levelPlayer.player.on(Player.Events.death, this.lose, this);
@@ -63,14 +59,12 @@ export default class PlatformerScene extends Phaser.Scene {
 
   resetLevelData()
   {
-    // const rawData = Cookies.get("levelData");
-    // if (rawData == null) return;
-    // var jsonStr = this.editor.archiver.decompress(rawData);
-    // while (!jsonStr.endsWith("]"))
-    //   jsonStr = jsonStr.slice(0, jsonStr.length-1);
+    const rawData = localStorage.getItem("levelData");
+    if (rawData == null) return;
 
-    const levelData = Cookies.getJSON("levelData");
+    const levelData = JSON.parse(LZString.decompressFromUTF16(rawData));
     if (levelData == null) return;
+
     levelData.forEach(t => {
       const tile = this.groundLayer.putTileAt(t.index, t.x, t.y);
       tile.properties = t.properties;
@@ -85,7 +79,8 @@ export default class PlatformerScene extends Phaser.Scene {
     this.levelPlayer.update(time,delta);
   }
 
-  lose() {
+  lose()
+  {
     this.isPaused = true;
 
     const cam = this.cameras.main;
@@ -94,7 +89,8 @@ export default class PlatformerScene extends Phaser.Scene {
     this.restart();
   }
 
-  restart() {
+  restart()
+  {
     this.isPaused = true;
     const cam = this.cameras.main;
     cam.fade(250, 0, 0, 0);
