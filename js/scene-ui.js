@@ -2,6 +2,7 @@
 */
 import SceneTilelevelEditor from "./scene-tile-editor.js";
 import ScenePlayer from "./scene-player.js";
+import Player from "./player.js";
 import MakerButtonBuilder from "./maker-button-builder.js";
 import MouseTileMarker from "./mouse-tile-marker.js";
 
@@ -46,6 +47,7 @@ export default class SceneUI
         margins: {left: 2, top:2},
         color: "#e86010",
         fontSize: 24,
+        fontWeight: "bold",
         shadow: {
           offsetX: 2,
           offsetY: 2,
@@ -89,10 +91,11 @@ export default class SceneUI
       event => marker.setVisible(true));
 
     levelEditor.editedLayer.on(SceneTilelevelEditor.Events.tileChanged, marker.updateFor, marker);
-    levelPlayer.on(ScenePlayer.Events.coinCollected,
-    coins => this.updateCoins(coins));
+    
+    levelPlayer.on(ScenePlayer.Events.coinCollected,this.updateCoins, this);
     levelPlayer.on(ScenePlayer.Events.timerUpdated, this.updateTime, this);
-
+    levelPlayer.player.on(Player.Events.win, this.showWinDialog, this);
+    
     scene.input.addPointer();
     scene.input.addPointer();
     this.modeSwitch = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR);
@@ -270,6 +273,69 @@ export default class SceneUI
     ui.setPosition(bounds.x, bounds.y);
   }
 
+  createPopup(bounds, buttons, style)
+  {
+    const ui = this.scene.add.container();
+    const panel = this.scene.add.graphics();
+
+    const panelRect = new Phaser.Geom.Rectangle(
+      style.panel.margins.left,
+      style.panel.margins.top,
+      bounds.width - style.panel.margins.right,
+      bounds.height - style.panel.margins.bottom
+    );
+
+    panel.fillStyle(style.panel.fillColor, style.panel.alpha);
+    panel.fillRoundedRect(panelRect.x, panelRect.y, panelRect.width, panelRect.height,
+      style.panel.borderRadius
+    );
+    panel.lineStyle(style.panel.borderWidth, style.panel.borderColor, style.panel.alpha);
+    panel.strokeRoundedRect(panelRect.x, panelRect.y, panelRect.width, panelRect.height,
+      style.panel.borderRadius
+    );    
+    ui.add(panel);
+    
+    const underlay = this.underlay = this.scene.add.graphics();
+    const buttonStep = panelRect.width / buttons.length - style.button.size;
+    const maker = new MakerButtonBuilder(ui, style.button);
+
+    underlay.fillStyle(style.button.fillColor, style.button.alpha);
+    buttons.forEach((name,i) => 
+    {      
+      const x = panelRect.x + i*(style.button.size + buttonStep) + buttonStep /2;
+      const y = panelRect.y + (panelRect.height + style.button.size)/2;
+
+      underlay.fillRoundedRect(
+        x, y,
+        style.button.size, style.button.size,
+        style.button.borderRadius
+      );
+      underlay.lineStyle(style.button.borderWidth, style.button.shadowColor, style.button.alpha);
+      underlay.beginPath();
+      underlay.moveTo(x, y+style.button.size-style.button.borderWidth);
+      underlay.lineTo(x+style.button.size-style.button.borderWidth,
+                      y+style.button.size-style.button.borderWidth);
+      underlay.lineTo(x+style.button.size-style.button.borderWidth, y);
+      underlay.strokePath();
+
+      underlay.lineStyle(style.button.borderWidth, style.button.highlightColor, style.button.alpha);
+      underlay.beginPath();
+      underlay.moveTo(x+style.button.borderWidth,
+                      y+style.button.size-style.button.borderWidth);
+      underlay.lineTo(x+style.button.borderWidth,
+                      y+style.button.borderWidth);
+      underlay.lineTo(x+style.button.size-style.button.borderWidth,
+                      y+style.button.borderWidth);
+      underlay.strokePath();
+
+      maker.makeButton({x: x, y: y}, name).setVisible(true);
+    });
+    ui.addAt(underlay, 1);
+    ui.setPosition(bounds.x, bounds.y);
+    console.log(ui);
+    return ui;
+  }
+  
   update()
   {
     const buttons = this.buttons[this.mode];
@@ -344,6 +410,20 @@ export default class SceneUI
     const mseconds = time%60;
     this.timeLabel.getByName("label").text = (seconds<10 ? "0"+seconds : seconds) + ":" +
                                              (mseconds<10 ? "0"+mseconds : mseconds);
+  }
+  
+  showWinDialog()
+  {    
+
+    const {widthInPixels, heightInPixels} = this.scene.map.layers[0];
+    const popupBounds = new Phaser.Geom.Rectangle( widthInPixels/4,heightInPixels/3, widthInPixels/2, heightInPixels/3);
+    const popup = this.createPopup(popupBounds, ["replay", "cancel", "ok"],this.style);
+    
+    //const tint = this.scene.add.graphics();
+    //tint.fillStyle(0x0, 0.25);
+    //tint.fillRect(-widthInPixels/4,-heightInPixels/3,widthInPixels, 640);
+    //popup.add(tint, 0);
+  
   }
 
   destroy()

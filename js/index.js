@@ -40,5 +40,5 @@ const config = {
     }]
   }
 };
-Cookies.remove("levelData");
+localStorage.removeItem("levelData");
 const game = new Phaser.Game(config);

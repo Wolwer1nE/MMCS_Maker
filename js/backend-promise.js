@@ -27,7 +27,6 @@ export default class BackendPromise extends Phaser.Events.EventEmitter
       request.open("POST", url, true);
       request.setRequestHeader('Content-Type', 'application/json');
       request.setRequestHeader('Charset', 'UTF-8');
-      request.withCredentials = true;
       
       request.addEventListener("load", () => 
       {
@@ -47,9 +46,16 @@ export default class BackendPromise extends Phaser.Events.EventEmitter
     });
   }
   
-  get(levelId, succeed, fail)
+  getAll()
   {
-    const url = this.baseURL + "/"+ levelId;
+    return get();
+  }
+  
+  get(levelId)
+  {
+    const url = levelId ?
+      this.baseURL + "/"+ levelId :
+      this.baseURL;
     return new Promise((succeed, fail) => 
     {
       var request = new XMLHttpRequest();      
@@ -72,5 +78,15 @@ export default class BackendPromise extends Phaser.Events.EventEmitter
       request.send();
     });
   }
-
 }
+
+var backend = new BackendPromise("http://www.rndgd.ru/api/levels", 1);
+
+backend.get().then( 
+        (response)=> {
+          console.log(response);
+        },
+        (error)=>{
+          console.log(error);     
+        }
+      );

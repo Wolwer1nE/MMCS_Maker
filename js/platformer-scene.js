@@ -59,27 +59,17 @@ export default class PlatformerScene extends Phaser.Scene {
         this.game.canvas.height - this.groundLayer.height),
       this.editor, this.levelPlayer
     );
-    
-    const rawData = localStorage.getItem("levelData");
-    if (rawData != null)
-    {
-      this.backend.send(rawData).then( 
-        (response)=> {
-          console.log(response);
-        },
-        (error)=>{
-          console.log(error);     
-        }
-      );
-    }
+    this.ui.showWinDialog();
   }
 
-  resetLevelData()
+  resetLevelData(zipped)
   {
-    const rawData = localStorage.getItem("levelData");
+    var rawData = localStorage.getItem("levelData");
     if (rawData == null) return;
-
-    const levelData = JSON.parse(LZString.decompressFromUTF16(rawData));
+    if (zipped)
+      rawData = LZString.decompressFromUTF16(rawData);
+    
+    const levelData = JSON.parse(rawData);
     if (levelData == null) return;
 
     levelData.forEach(t => {
