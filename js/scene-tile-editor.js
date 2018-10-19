@@ -78,7 +78,7 @@ export default class SceneTileEditor
     }
   }
 
-  saveLevelData()
+  saveLevelData(zipped)
   {
     const levelData = [];
     this.editedLayer.layer.data.forEach( r => {
@@ -92,8 +92,10 @@ export default class SceneTileEditor
       });
     });
 
-    console.log("save",levelData.length);
-    localStorage.setItem("levelData", LZString.compressToUTF16(JSON.stringify(levelData)));
+    if (zipped)
+      localStorage.setItem("levelData", LZString.compressToUTF16(JSON.stringify(levelData)));
+    else
+      localStorage.setItem("levelData", JSON.stringify(levelData));
   }
 
   update(pointer)
