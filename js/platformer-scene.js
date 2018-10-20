@@ -1,12 +1,12 @@
+/**
+ * A class that extends Phaser.Scene and wraps up the core logic for the platformer level.
+ */
 import Player from "./player.js";
 import SceneUI from "./scene-ui.js";
 import SceneTileEditor from "./scene-tile-editor.js";
 import ScenePlayer from "./scene-player.js";
 import BackendPromise from "./backend-promise.js";
 
-/**
- * A class that extends Phaser.Scene and wraps up the core logic for the platformer level.
- */
 export default class PlatformerScene extends Phaser.Scene {
 
   preload() {
@@ -59,6 +59,11 @@ export default class PlatformerScene extends Phaser.Scene {
         this.game.canvas.height - this.groundLayer.height),
       this.editor, this.levelPlayer
     );
+
+    let urlParams = new URLSearchParams(window.location.search);
+    let level = urlParams.get('level');
+    if (level)
+      this.loadLevelData(level)
   }
 
   resetLevelData(zipped)
@@ -97,6 +102,17 @@ export default class PlatformerScene extends Phaser.Scene {
 
   }
 
+  loadLevelData(levelId)
+  {
+    this.backend.get(levelId).then((response) =>
+    {
+      response = JSON.parse(response)
+      localStorage.setItem("levelData", response.data);
+      this.resetLevelData();
+    }
+      );
+  }
+
   sendLevelData()
   {
     const rawData = localStorage.getItem("levelData");
@@ -106,8 +122,28 @@ export default class PlatformerScene extends Phaser.Scene {
         (response) => {
           //this.backend.shorten(window.location.href+"?level="+response.id).then(
           response = JSON.parse(response);
-          this.ui.showLinkDialog(window.location.href+"?level="+response.id).then(
-                 () => this.restart())
+          const link = window.location.href+"?level="+response.id;
+          const textArea= document.createElement("textarea");
+
+          textArea.innerText = link
+          textArea.style  = "\
+          position: absolute;\
+          width:50%;\
+          left: 134px;\
+          top: 256px;\
+          background-color: #0000;\
+          font-size: 18px;\
+          font: bold 18px Arial;\
+          color: #e86000;\
+          text-shadow: 1px 1px black; \
+          border:  none;";
+          document.querySelector("#game-container").appendChild(textArea);
+
+          this.ui.showMessage("Ваша ссылка:\n\n").then(
+           () => {
+             textArea.parentNode.removeChild(textArea);
+             this.restart()
+          })
         },
         (error) => {
           console.log(error);

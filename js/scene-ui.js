@@ -479,13 +479,13 @@ export default class SceneUI extends Phaser.Events.EventEmitter
     //popup.add(tint, 0);
   }
 
-  showLinkDialog(link)
+  showMessage(text)
   {
     this.scene.isPaused=true;
     return new Promise((success, fail) =>
     {
       const popup = this.popup = this.createPopup(
-        link,
+        text,
         ["ok"],
         this.style
       );

@@ -2,7 +2,6 @@
   Backend communication
 */
 
-
 export default class BackendPromise extends Phaser.Events.EventEmitter
 {
   constructor(baseUrl, defaultUser)
@@ -21,71 +20,49 @@ export default class BackendPromise extends Phaser.Events.EventEmitter
       data: levelData
     };
 
-    return new Promise((succeed, fail) =>
-    {
-      var request = new XMLHttpRequest();
-      request.open("POST", url, true);
-      request.setRequestHeader('Content-Type', 'application/json');
-      request.setRequestHeader('Charset', 'UTF-8');
+    const headers = {
+      "Content-Type" : "application/json",
+      "Charset" : "UTF-8"
+    };
 
-      request.onreadystatechange = function() {
-          if(request.readyState == 4) {
-              if(request.status==200) {
-                  console.log("CORS works!", request.responseText);
-              } else {
-                  console.log("CORS error?", request);
-              }
-          }
-      }
-
-      request.addEventListener("load", () =>
-      {
-        console.log(request.response);
-        if (request.status < 400)
-          succeed(request.response);
-        else
-          fail(new Error("Request failed: " + request.statusText));
-      });
-
-      request.addEventListener("error", () =>
-      {
-        fail(new Error("Network error"));
-      });
-
-      request.send(JSON.stringify(data));
-    });
+    return this.__request("POST", url, headers, data);
   }
 
   getAll()
   {
-    return this.__get(this.baseURL);
+    return this.__request("GET", this.baseURL);
   }
 
   get(levelId)
   {
     const url = this.baseURL + "/"+ levelId;
-    return this.__get(url);
+    return this.__request("GET", url);
   }
 
   shorten(link)
   {
     const url = "https://clck.ru/--?url=" + link;
-    return this.__get(url);
+    return this.__request("GET", url);
   }
 
-  __get(url)
+  __request(type, url, headers, data)
   {
     return new Promise((succeed, fail) =>
     {
       var request = new XMLHttpRequest();
-      request.open("GET", url, true);
+      request.open(type, url, true);
 
-      request.onreadystatechange = function() {
+      if (headers)
+        Object.keys(headers).forEach((key) =>
+          request.setRequestHeader(key, headers[key])
+        );
+
+      request.onreadystatechange = () => {
           if(request.readyState == 4) {
               if(request.status==200) {
                   console.log("CORS works!", request.responseText);
               } else {
-                  console.log("Oops", request);
+                  console.log("CORS error!", request);
               }
           }
       }
@@ -104,7 +81,8 @@ export default class BackendPromise extends Phaser.Events.EventEmitter
         fail(new Error("Network error"));
       });
 
-      request.send();
+      const body = data ? JSON.stringify(data) : null
+      request.send(body);
     });
   }
 }
