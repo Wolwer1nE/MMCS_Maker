@@ -28,6 +28,16 @@ export default class BackendPromise extends Phaser.Events.EventEmitter
       request.setRequestHeader('Content-Type', 'application/json');
       request.setRequestHeader('Charset', 'UTF-8');
 
+      request.onreadystatechange = function() {
+          if(request.readyState == 4) {
+              if(request.status==200) {
+                  console.log("CORS works!", request.responseText);
+              } else {
+                  console.log("CORS error?", request);
+              }
+          }
+      }
+
       request.addEventListener("load", () =>
       {
         console.log(request.response);
@@ -79,7 +89,7 @@ export default class BackendPromise extends Phaser.Events.EventEmitter
               }
           }
       }
-      
+
       request.addEventListener("load", () =>
       {
         console.log(request.response);
