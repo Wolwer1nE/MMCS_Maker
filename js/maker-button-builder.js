@@ -204,7 +204,7 @@ export default class MakerButtonBuilder
 
     return this.makeSprite(textureKey);
   }
-  
+
   drawOk(textureKey)
   {
     const button = this.parent.scene.add.graphics();
@@ -214,13 +214,13 @@ export default class MakerButtonBuilder
     const bottomRight = {x: style.size/ 4 + style.size/ 2, y: style.size/ 4+ style.size/ 2};
     const offset = 2 * style.borderWidth;
 
-    const centerTop = {x: style.size /2, y: style.size /2};
-    const centerBottom = {x:style.size /2 , y: bottomRight.y - offset};
-    const topLeftRight = {x:style.size /2 - 1.5*offset, y: style.size /2 - 1.5*offset};
-    const topLeftLeft = {x:style.size /2 - 2.5*offset, y: style.size /2 - 0.5*offset};
-    const topRightLeft = {x:bottomRight.x, y:topLeft.y};
-    const topRightRight = {x:bottomRight.x + offset, y:topLeft.y + offset};
-    
+    const centerTop = {x: style.size /2 - offset, y: style.size /2};
+    const centerBottom = {x:style.size /2 - offset, y: bottomRight.y - offset};
+    const topLeftRight = {x:style.size /2 - 2.5*offset, y: style.size /2 - 1.5*offset};
+    const topLeftLeft = {x:style.size /2 - 3.5*offset, y: style.size /2 - 0.5*offset};
+    const topRightLeft = {x:bottomRight.x - offset, y:topLeft.y};
+    const topRightRight = {x:bottomRight.x , y:topLeft.y + offset};
+
     button.lineStyle(style.borderWidth, style.shadowColor, style.alpha);
     button.fillStyle(style.fillColor, style.alpha);
     button.beginPath();
@@ -241,7 +241,7 @@ export default class MakerButtonBuilder
 
     button.moveTo(topRightRight.x, topRightRight.y);
     button.lineTo(centerBottom.x, centerBottom.y);
-    
+
     button.strokePath();
 
     button.generateTexture(textureKey, style.size, style.size);

@@ -97,8 +97,10 @@ export default class PlatformerScene extends Phaser.Scene {
     this.levelPlayer.player.freeze();
     this.ui.showWinDialog("Вы успешно создали уровень!\nХотите сохранить его?").then(
       () => this.sendLevelData(),
-      () => this.restart()
-    );
+      () => {
+        localStorage.removeItem("levelData");
+        this.restart()
+    });
 
   }
 
@@ -142,11 +144,13 @@ export default class PlatformerScene extends Phaser.Scene {
           this.ui.showMessage("Ваша ссылка:\n\n").then(
            () => {
              textArea.parentNode.removeChild(textArea);
+             localStorage.removeItem("levelData");
              this.restart()
           })
         },
         (error) => {
           console.log(error);
+          //localStorage.removeItem("levelData");
           this.restart();
         }
       );
