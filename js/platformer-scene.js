@@ -5,7 +5,8 @@ import Player from "./player.js";
 import SceneUI from "./scene-ui.js";
 import SceneTileEditor from "./scene-tile-editor.js";
 import ScenePlayer from "./scene-player.js";
-import BackendPromise from "./backend-promise.js";
+import SceneStorage from "./scene-storage.js";
+import {BACKEND_LEVEL_API} from "./backend-promise.js";
 
 export default class PlatformerScene extends Phaser.Scene {
 
@@ -27,8 +28,6 @@ export default class PlatformerScene extends Phaser.Scene {
     });
 
     this.load.tilemapTiledJSON("map", "./assets/tilemaps/scienceFair2018_template.json");
-
-    this.backend = new BackendPromise("http://www.rndgd.ru/api/levels", 1);
   }
 
   create()
@@ -36,48 +35,66 @@ export default class PlatformerScene extends Phaser.Scene {
     this.isPaused = false;
     this.isEditing = true;
 
+    let options = this.options = this.parseURL(window.location.search);
+    // remove params
+    history.pushState({}, null, window.location.origin);
+
     const map = this.map = this.make.tilemap({ key: "map" });
     const tiles = map.addTilesetImage("smb", "tiles");
 
     map.createStaticLayer("Background", tiles);
     this.groundLayer = map.createDynamicLayer("Ground", tiles);
     this.groundLayer.setCollisionByProperty({ collides: true });
-    // No bottom
-    this.physics.world.setBounds(0, 0, this.physics.world.bounds.width, this.physics.world.bounds.height,
-      true, true, true, false);
+
+    this.physics.world.setBounds(
+      0, 0,
+      this.physics.world.bounds.width, this.physics.world.bounds.height,
+      true, true, true, false
+    );
 
     this.editor = new SceneTileEditor(this, this.groundLayer, map);
     this.levelPlayer = new ScenePlayer(this, map, SceneTileEditor.Mode.coin.tile);
+
     this.levelPlayer.player.on(Player.Events.win, this.win, this);
     this.levelPlayer.player.on(Player.Events.death, this.lose, this);
 
-    this.ui = new SceneUI(this,
-      new Phaser.Geom.Rectangle(
-        0,
-        this.groundLayer.height,
-        this.game.canvas.width,
-        this.game.canvas.height - this.groundLayer.height),
-      this.editor, this.levelPlayer
+    let uiRect = new Phaser.Geom.Rectangle(
+      0, this.groundLayer.height,
+      this.game.canvas.width,
+      this.game.canvas.height - this.groundLayer.height
     );
 
-    let urlParams = new URLSearchParams(window.location.search);
-    let level = urlParams.get('level');
-    if (level)
-      this.loadLevelData(level)
+    this.ui = new SceneUI(this, uiRect, this.editor, this.levelPlayer);
+    this.ui.setMode(options.mode ? options.mode : SceneUI.Mode.editor);
+
+    this.levelStorage = new SceneStorage("levelData", options.levelId, BACKEND_LEVEL_API);
+    if (options.levelId) {
+      this.levelStorage.loadData().then(
+        (r) => this.resetLevelData(r),
+        (e) => {
+          console.log(e);
+          this.resetLevelData(this.levelStorage.getData());
+      });
+    } else {
+      this.resetLevelData(this.levelStorage.getData());
+    }
   }
 
-  resetLevelData(zipped)
+  parseURL(url)
   {
-    var rawData = localStorage.getItem("levelData");
-    if (rawData == null) return;
-    if (zipped)
-      rawData = LZString.decompressFromUTF16(rawData);
+    var options = {}
+    for( var p of new URLSearchParams(url)){
+      options[p[0]] = p[1];
+    }
+    return options;
+  }
 
-    const levelData = JSON.parse(rawData);
+  resetLevelData(levelData)
+  {
     if (levelData == null) return;
 
     levelData.forEach(t => {
-      const tile = this.groundLayer.putTileAt(t.index, t.x, t.y);
+      let tile = this.groundLayer.putTileAt(t.index, t.x, t.y);
       tile.properties = t.properties;
     });
     this.groundLayer.setCollisionByProperty({ collides: true });
@@ -92,69 +109,31 @@ export default class PlatformerScene extends Phaser.Scene {
   win()
   {
     this.isPaused = true;
-    const cam = this.cameras.main;
+    let cam = this.cameras.main;
 
     this.levelPlayer.player.freeze();
-    this.ui.showWinDialog("Вы успешно создали уровень!\nХотите сохранить его?").then(
-      () => this.sendLevelData(),
-      () => {
-        localStorage.removeItem("levelData");
-        this.restart()
-    });
-
-  }
-
-  loadLevelData(levelId)
-  {
-    this.backend.get(levelId).then((response) =>
-    {
-      response = JSON.parse(response)
-      localStorage.setItem("levelData", response.data);
-      this.resetLevelData();
-    }
-      );
-  }
-
-  sendLevelData()
-  {
-    const rawData = localStorage.getItem("levelData");
-    if (rawData != null)
-    {
-      this.backend.send(rawData).then(
+    this.ui.showDialog("Вы успешно создали уровень!\nХотите сохранить его?",
+                          ["replay", "cancel", "ok"])
+    .then(
+      // OK
+      () => this.levelStorage.sendData().then(
         (response) => {
-          //this.backend.shorten(window.location.href+"?level="+response.id).then(
-          response = JSON.parse(response);
-          const link = window.location.href+"?level="+response.id;
-          const textArea= document.createElement("textarea");
-
-          textArea.innerText = link
-          textArea.style  = "\
-          position: absolute;\
-          width:50%;\
-          left: 134px;\
-          top: 256px;\
-          background-color: #0000;\
-          font-size: 18px;\
-          font: bold 18px Arial;\
-          color: #e86000;\
-          text-shadow: 1px 1px black; \
-          border:  none;";
-          document.querySelector("#game-container").appendChild(textArea);
-
-          this.ui.showMessage("Ваша ссылка:\n\n").then(
-           () => {
-             textArea.parentNode.removeChild(textArea);
-             localStorage.removeItem("levelData");
-             this.restart()
-          })
+          let link = window.location.href+"?levelId="+response.id;
+          console.log(link);
+          this.restart();
         },
         (error) => {
           console.log(error);
-          //localStorage.removeItem("levelData");
           this.restart();
         }
-      );
-    }
+      ),
+      // REPLAY, CANCEL
+      (button) => {
+        if (button == "cancel")
+            this.levelStorage.removeData();
+       this.restart();
+    });
+
   }
 
   lose()

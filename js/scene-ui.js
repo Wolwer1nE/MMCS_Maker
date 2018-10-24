@@ -115,7 +115,6 @@ export default class SceneUI extends Phaser.Events.EventEmitter
     scene.input.on("pointerup", this.onPointerUp, this);
     scene.input.keyboard.on("keydown", this.onKeyboardDown, this);
 
-    this.setMode(SceneUI.Mode.editor);
     this.levelEditor.setMode(SceneTileEditor.Mode.brick);
   }
 
@@ -147,7 +146,6 @@ export default class SceneUI extends Phaser.Events.EventEmitter
     else
       this.levelPlayer.resetLevel();
 
-    this.scene.resetLevelData();
   }
 
   initUI(ui, bounds, style)
@@ -400,15 +398,11 @@ export default class SceneUI extends Phaser.Events.EventEmitter
       {
         switch(object.name)
         {
-          case "replay":
-            this.setMode(SceneUI.Mode.editor);
-            this.popup.onCancel();
-            break;
           case "ok":
             this.popup.onOk();
             break;
           default:
-            return;
+            this.popup.onCancel(object.name);
         }
         this.popup.destroy();
         this.popup = null;
@@ -460,36 +454,18 @@ export default class SceneUI extends Phaser.Events.EventEmitter
                                              (mseconds<10 ? "0"+mseconds : mseconds);
   }
 
-  showWinDialog(text)
+  showDialog(text, buttons)
   {
     this.scene.isPaused = true;
     return new Promise((success, fail) =>
     {
       const popup = this.popup = this.createPopup(
         text,
-        ["replay", "ok"],
+        buttons,
         this.style
       );
       popup.onOk = success;
       popup.onCancel = fail;
-    });
-    //const tint = this.scene.add.graphics();
-    //tint.fillStyle(0x0, 0.25);
-    //tint.fillRect(-widthInPixels/4,-heightInPixels/3,widthInPixels, 640);
-    //popup.add(tint, 0);
-  }
-
-  showMessage(text)
-  {
-    this.scene.isPaused=true;
-    return new Promise((success, fail) =>
-    {
-      const popup = this.popup = this.createPopup(
-        text,
-        ["ok"],
-        this.style
-      );
-      popup.onOk = success;
     });
   }
 

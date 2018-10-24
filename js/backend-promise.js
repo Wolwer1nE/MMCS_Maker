@@ -2,6 +2,8 @@
   Backend communication
 */
 
+export let BACKEND_LEVEL_API = "http://www.rndgd.ru/api/levels";
+
 export default class BackendPromise extends Phaser.Events.EventEmitter
 {
   constructor(baseUrl, defaultUser)
@@ -11,12 +13,12 @@ export default class BackendPromise extends Phaser.Events.EventEmitter
     this.defaultUser = defaultUser;
   }
 
-  send(levelData)
+  send(levelData, user)
   {
     const url = this.baseURL;
 
     const data = {
-      user_id: this.defaultUser,
+      user_id: user ? user : this.defaultUser,
       data: levelData
     };
 
@@ -33,9 +35,9 @@ export default class BackendPromise extends Phaser.Events.EventEmitter
     return this.__request("GET", this.baseURL);
   }
 
-  get(levelId)
+  get(id)
   {
-    const url = this.baseURL + "/"+ levelId;
+    const url = this.baseURL + "/"+ id;
     return this.__request("GET", url);
   }
 
