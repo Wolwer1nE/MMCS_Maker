@@ -28,7 +28,7 @@ export default var SUIMaker = {}
     }
   }
 
-  SUIMaker.button = function (sprite, x, y, width, height, style, container)
+  SUIMaker.button = function (x, y, width, height, style)
   {
 
     var button = new SUIButton(this.scene, x, y, width, height);
