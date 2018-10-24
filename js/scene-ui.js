@@ -401,8 +401,12 @@ export default class SceneUI extends Phaser.Events.EventEmitter
           case "ok":
             this.popup.onOk();
             break;
-          default:
+          case "cancel":
+          case "replay":
             this.popup.onCancel(object.name);
+            break;
+          default:
+            return;
         }
         this.popup.destroy();
         this.popup = null;

@@ -120,6 +120,7 @@ export default class PlatformerScene extends Phaser.Scene {
         (response) => {
           let link = window.location.href+"?levelId="+response.id;
           console.log(link);
+          this.levelStorage.removeData();
           this.restart();
         },
         (error) => {
