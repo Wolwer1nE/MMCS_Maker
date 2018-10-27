@@ -32,6 +32,7 @@ export default class SceneUI extends Phaser.Events.EventEmitter
       },
       button: {
         size: bounds.height / 4 * 1.5,
+        borderStyle: "raised",
         borderWidth: 2,
         borderRadius: 3,
         shadowColor: 0x000000,

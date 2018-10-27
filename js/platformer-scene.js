@@ -37,7 +37,7 @@ export default class PlatformerScene extends Phaser.Scene {
 
     let options = this.options = this.parseURL(window.location.search);
     // remove params
-    history.pushState({}, null, window.location.origin);
+    history.pushState({}, null, window.location.origin + window.location.pathname);
 
     const map = this.map = this.make.tilemap({ key: "map" });
     const tiles = map.addTilesetImage("smb", "tiles");
