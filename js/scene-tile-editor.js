@@ -78,7 +78,7 @@ export default class SceneTileEditor extends Phaser.Events.EventEmitter
     }
   }
 
-  saveLevelData(zipped)
+  saveLevelData()
   {
     const levelData = [];
     this.editedLayer.layer.data.forEach( r => {
@@ -91,11 +91,22 @@ export default class SceneTileEditor extends Phaser.Events.EventEmitter
           });
       });
     });
+    
+    this.scene.levelStorage.setData(levelData);
+  }
 
-    if (zipped)
-      localStorage.setItem("levelData", LZString.compressToUTF16(JSON.stringify(levelData)));
-    else
-      localStorage.setItem("levelData", JSON.stringify(levelData));
+  resetLevelData(levelData)
+  {
+    if (levelData === undefined)
+      levelData = this.scene.levelStorage.getData();
+
+    if (levelData == null)  return;
+
+    levelData.forEach((t) => {
+      let tile = this.editedLayer.putTileAt(t.index, t.x, t.y);
+      tile.properties = t.properties;
+    });
+    this.editedLayer.setCollisionByProperty({ collides: true });
   }
 
   update(pointer)

@@ -60,7 +60,7 @@ export default class SceneStorage extends Phaser.Events.EventEmitter
 
   __setData(key, data)
   {
-    console.log("set ", key, " : ", data);
+    //console.log("set ", key, " : ", data);
 
     if (data == null) {
       this.__removeData(key);

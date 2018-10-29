@@ -144,8 +144,10 @@ export default class SceneUI extends Phaser.Events.EventEmitter
       this.levelPlayer.startLevel();
     }
     else
+    {
       this.levelPlayer.resetLevel();
-
+      this.levelEditor.resetLevelData();
+    }
   }
 
   initUI(ui, bounds, style)

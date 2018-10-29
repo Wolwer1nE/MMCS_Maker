@@ -37,7 +37,7 @@ export default class PlatformerScene extends Phaser.Scene {
 
     let options = this.options = this.parseURL(window.location.search);
     // remove params
-    history.pushState({}, null, window.location.origin);
+    history.pushState({}, null, window.location.origin+window.location.pathname);
 
     const map = this.map = this.make.tilemap({ key: "map" });
     const tiles = map.addTilesetImage("smb", "tiles");
@@ -64,20 +64,20 @@ export default class PlatformerScene extends Phaser.Scene {
       this.game.canvas.height - this.groundLayer.height
     );
 
-    this.ui = new SceneUI(this, uiRect, this.editor, this.levelPlayer);
-    this.ui.setMode(options.mode ? options.mode : SceneUI.Mode.editor);
-
     this.levelStorage = new SceneStorage("levelData", options.levelId, BACKEND_LEVEL_API);
     if (options.levelId) {
       this.levelStorage.loadData().then(
-        (r) => this.resetLevelData(r),
+        (r) => this.editor.resetLevelData(r),
         (e) => {
           console.log(e);
-          this.resetLevelData(this.levelStorage.getData());
+          this.editor.resetLevelData(this.levelStorage.getData());
       });
     } else {
-      this.resetLevelData(this.levelStorage.getData());
+      this.editor.resetLevelData(this.levelStorage.getData());
     }
+
+    this.ui = new SceneUI(this, uiRect, this.editor, this.levelPlayer);
+    this.ui.setMode(options.mode ? options.mode : SceneUI.Mode.editor);
   }
 
   parseURL(url)
@@ -87,17 +87,6 @@ export default class PlatformerScene extends Phaser.Scene {
       options[p[0]] = p[1];
     }
     return options;
-  }
-
-  resetLevelData(levelData)
-  {
-    if (levelData == null) return;
-
-    levelData.forEach(t => {
-      let tile = this.groundLayer.putTileAt(t.index, t.x, t.y);
-      tile.properties = t.properties;
-    });
-    this.groundLayer.setCollisionByProperty({ collides: true });
   }
 
   update(time, delta) {
