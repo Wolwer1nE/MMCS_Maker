@@ -12,10 +12,7 @@ export default class XLabel extends XView
 
   __init(params)
   {
-    this.content = this.scene.add.text(
-        this.style.padding ? this.style.padding.left : 0,
-        this.style.padding ? this.style.padding.top : 0,
-        params.data, this.style);
+    this.content = this.scene.add.text(0, 0, params.data, this.style);
     this.add(this.content);
   }
 }

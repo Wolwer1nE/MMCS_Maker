@@ -16,72 +16,73 @@ export default class SceneUI extends Phaser.Events.EventEmitter
     this.levelEditor = levelEditor;
     this.levelPlayer = levelPlayer;
 
-    this.style = {
-      panel: {
-        margins: {
-          top: 1,
-          left: 1,
-          bottom: 2,
-          right: 2,
-        },
-        borderWidth: 2,
-        borderRadius: 5,
-        borderColor: 0x000000,
-        fillColor: 0xf0d0b0,
-        alpha: 1
-      },
-      button: {
-        size: bounds.height / 4 * 1.5,
-        borderStyle: "raised",
-        borderWidth: 2,
-        borderRadius: 3,
-        shadowColor: 0x000000,
-        fillColor: 0xe86010,
-        highlightColor: 0xf0d0b0,
-        alpha: 1
-      },
-      hotkey: {
-        margins: {left: 2},
-        color: "#000000",
-        align: 'left'
-      },
-      label: {
-        margins: {left: 2, top:2},
-        color: "#e86010",
-        font: "22px Menlo",
-        align: "center",
-        shadow: {
-          offsetX: 2,
-          offsetY: 2,
-          fill: true
-        }
-      },
-      popup: {
-        color: "#e86010",
-        font: "bold 18px Arial",
-        align: "center",
-        shadow: {
-          offsetX: 1,
-          offsetY: 1,
-          fill: true
-        }
-      },
-      marker: {
-        margins: {
-          top: -1,
-          left: -1,
-          bottom: -2,
-          right: -2,
-        },
-        width: levelEditor.editedLayer.tilemap.tileWidth,
-        height: levelEditor.editedLayer.tilemap.tileHeight,
-        borderWidth: 2,
-        borderColor: {
-          normal: 0xffffff,
-          warning: 0xff4f78
-        }
-      }
-    }
+    this.style = this.scene.xui.style;
+    // {
+    //   panel: {
+    //     margins: {
+    //       top: 1,
+    //       left: 1,
+    //       bottom: 2,
+    //       right: 2,
+    //     },
+    //     borderWidth: 2,
+    //     borderRadius: 5,
+    //     borderColor: 0x000000,
+    //     fillColor: 0xf0d0b0,
+    //     alpha: 1
+    //   },
+    //   button: {
+    //     size: bounds.height / 4 * 1.5,
+    //     borderStyle: "raised",
+    //     borderWidth: 2,
+    //     borderRadius: 3,
+    //     shadowColor: 0x000000,
+    //     fillColor: 0xe86010,
+    //     highlightColor: 0xf0d0b0,
+    //     alpha: 1
+    //   },
+    //   hotkey: {
+    //     margins: {left: 2},
+    //     color: "#000000",
+    //     align: 'left'
+    //   },
+    //   label: {
+    //     margins: {left: 2, top:2},
+    //     color: "#e86010",
+    //     font: "22px Menlo",
+    //     align: "center",
+    //     shadow: {
+    //       offsetX: 2,
+    //       offsetY: 2,
+    //       fill: true
+    //     }
+    //   },
+    //   popup: {
+    //     color: "#e86010",
+    //     font: "bold 18px Arial",
+    //     align: "center",
+    //     shadow: {
+    //       offsetX: 1,
+    //       offsetY: 1,
+    //       fill: true
+    //     }
+    //   },
+    //   marker: {
+    //     margins: {
+    //       top: -1,
+    //       left: -1,
+    //       bottom: -2,
+    //       right: -2,
+    //     },
+    //     width: levelEditor.editedLayer.tilemap.tileWidth,
+    //     height: levelEditor.editedLayer.tilemap.tileHeight,
+    //     borderWidth: 2,
+    //     borderColor: {
+    //       normal: 0xffffff,
+    //       warning: 0xff4f78
+    //     }
+    //   }
+    // }
 
     SceneUI.Mode =
     {

@@ -41,6 +41,7 @@ export default class XSprite extends XRender
       textureKey = this.constructor.name +
         "_" + width + "x" + height +
         "_" + JSON.stringify(style).hash();
+
     this.key = textureKey;
     this.frame = frame
   }

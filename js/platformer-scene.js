@@ -8,8 +8,8 @@ import ScenePlayer from "./scene-player.js";
 import SceneStorage from "./scene-storage.js";
 import {BACKEND_LEVEL_API} from "./backend-promise.js";
 
-export default class PlatformerScene extends Phaser.Scene {
-
+export default class PlatformerScene extends Phaser.Scene
+{
   preload() {
     this.load.spritesheet(
       "player",
@@ -28,6 +28,9 @@ export default class PlatformerScene extends Phaser.Scene {
     });
 
     this.load.tilemapTiledJSON("map", "./assets/tilemaps/scienceFair2018_template.json");
+    this.xui.load("./assets/ui/x-ui-style.json");
+    console.log(this);
+    console.log(this.input.keyboard.keys);
   }
 
   create()

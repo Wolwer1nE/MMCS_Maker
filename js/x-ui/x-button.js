@@ -1,10 +1,10 @@
 /**
-  TextLabel
+*  Button
 */
 import XRender from "./x-render.js"
-import XView from "./x-view.js"
+import XControl from "./x-control.js"
 
-export class XButton extends XView
+export class XButton extends XControl
 {
   constructor(scene, style, width, height, params)
   {
@@ -13,7 +13,7 @@ export class XButton extends XView
 
   __init(params)
   {
-    this.add(XRender.make.rect(this.scene, this.style, this.width, this.height).sprite);
+    this.add(this.underlay = XRender.make.rect(this.scene, this.style, this.width, this.height).sprite);
     switch (params.type)
     {
       case "text":
@@ -26,6 +26,7 @@ export class XButton extends XView
         this.content = params.data;
         break;
     }
+    this.add(this.content);
   }
 }
 
@@ -34,17 +35,35 @@ export class XImageButton extends XButton
   constructor(scene, style, width, height, sprite)
   {
     super(scene, style, width, height,
-      { type: "image", data: sprite };
+      { type: "image", data: sprite }
     );
   }
 }
 
-export class XOkButton extends XImageButton
+export class XSystemButton extends XImageButton
 {
-  constructor(scene, style, width, height)
+  constructor(scene, style, width, height, type)
   {
+    if (!XSystemButton.Type.hasOwnProperty(type))
+    {
+      throw new TypeError("Wrong system button type: "+ type)
+    }
     super(scene, style, width, height,
-      XRender.make.ok(style, width, height).sprite);
+      XRender.make[type](scene, style, width, height).sprite);
+  }
+
+  static get Type() {
+    return {
+      "ok" : "ok",
+      "cancel" : "cancel",
+      "play" : "play",
+      "pause" : "pause",
+      "replay" : "replay",
+      "up" : "up",
+      "down" : "down",
+      "left" : "left",
+      "right" : "right",
+    }
   }
 }
 
@@ -53,7 +72,7 @@ export class XTextButton extends XButton
   constructor(scene, style, width, height, text)
   {
     super(scene, style, width, height,
-      { type: "text", data: text };
+      { type: "text", data: text }
     );
   }
 }
