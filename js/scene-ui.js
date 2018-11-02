@@ -5,6 +5,7 @@ import ScenePlayer from "./scene-player.js";
 import Player from "./player.js";
 import MakerButtonBuilder from "./maker-button-builder.js";
 import MouseTileMarker from "./mouse-tile-marker.js";
+import XRender from "./x-ui/x-render.js"
 
 export default class SceneUI extends Phaser.Events.EventEmitter
 {
@@ -17,72 +18,6 @@ export default class SceneUI extends Phaser.Events.EventEmitter
     this.levelPlayer = levelPlayer;
 
     this.style = this.scene.xui.style;
-    // {
-    //   panel: {
-    //     margins: {
-    //       top: 1,
-    //       left: 1,
-    //       bottom: 2,
-    //       right: 2,
-    //     },
-    //     borderWidth: 2,
-    //     borderRadius: 5,
-    //     borderColor: 0x000000,
-    //     fillColor: 0xf0d0b0,
-    //     alpha: 1
-    //   },
-    //   button: {
-    //     size: bounds.height / 4 * 1.5,
-    //     borderStyle: "raised",
-    //     borderWidth: 2,
-    //     borderRadius: 3,
-    //     shadowColor: 0x000000,
-    //     fillColor: 0xe86010,
-    //     highlightColor: 0xf0d0b0,
-    //     alpha: 1
-    //   },
-    //   hotkey: {
-    //     margins: {left: 2},
-    //     color: "#000000",
-    //     align: 'left'
-    //   },
-    //   label: {
-    //     margins: {left: 2, top:2},
-    //     color: "#e86010",
-    //     font: "22px Menlo",
-    //     align: "center",
-    //     shadow: {
-    //       offsetX: 2,
-    //       offsetY: 2,
-    //       fill: true
-    //     }
-    //   },
-    //   popup: {
-    //     color: "#e86010",
-    //     font: "bold 18px Arial",
-    //     align: "center",
-    //     shadow: {
-    //       offsetX: 1,
-    //       offsetY: 1,
-    //       fill: true
-    //     }
-    //   },
-    //   marker: {
-    //     margins: {
-    //       top: -1,
-    //       left: -1,
-    //       bottom: -2,
-    //       right: -2,
-    //     },
-    //     width: levelEditor.editedLayer.tilemap.tileWidth,
-    //     height: levelEditor.editedLayer.tilemap.tileHeight,
-    //     borderWidth: 2,
-    //     borderColor: {
-    //       normal: 0xffffff,
-    //       warning: 0xff4f78
-    //     }
-    //   }
-    // }
 
     SceneUI.Mode =
     {
@@ -112,12 +47,13 @@ export default class SceneUI extends Phaser.Events.EventEmitter
     scene.input.addPointer();
     this.modeSwitch = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.FOUR);
 
-    scene.input.on("gameobjectdown", this.onObjectDown, this);
-    scene.input.on("gameobjectup", this.onObjectUp, this);
-    scene.input.on("pointerup", this.onPointerUp, this);
-    scene.input.keyboard.on("keydown", this.onKeyboardDown, this);
+    // scene.input.on("gameobjectdown", this.onObjectDown, this);
+    // scene.input.on("gameobjectup", this.onObjectUp, this);
+    // scene.input.on("pointerup", this.onPointerUp, this);
+    // scene.input.keyboard.on("keydown", this.onKeyboardDown, this);
 
     this.levelEditor.setMode(SceneTileEditor.Mode.brick);
+    //this.scene.xui.showDialog("test", ["cancel","ok"]);
   }
 
   setMode(newMode)
@@ -152,73 +88,19 @@ export default class SceneUI extends Phaser.Events.EventEmitter
 
   initUI(ui, bounds, style)
   {
-    const panel = this.scene.add.graphics();
+    const panel = this.scene.xui.add.panel(style.panel, bounds.width, bounds.height)
+    //ui.add(panel);
 
-    const panelRect = new Phaser.Geom.Rectangle(
-      style.panel.margins.left,
-      style.panel.margins.top,
-      bounds.width - style.panel.margins.right,
-      bounds.height - style.panel.margins.bottom
-    );
-
-    panel.fillStyle(style.panel.fillColor, style.panel.alpha);
-    panel.fillRoundedRect(panelRect.x, panelRect.y, panelRect.width, panelRect.height,
-      style.panel.borderRadius
-    );
-    panel.lineStyle(style.panel.borderWidth, style.panel.borderColor, style.panel.alpha);
-    panel.strokeRoundedRect(panelRect.x, panelRect.y, panelRect.width, panelRect.height,
-      style.panel.borderRadius
-    );
-    //panel.visible = false;
-    ui.add(panel);
-
-    const underlay = this.underlay = this.scene.add.graphics();
-    const buttonStep = panelRect.width / 4 - style.button.size;
+    let buttonSize = 48;
+    const buttonStep = panel.width / 4 - buttonSize;
     const buttonPos = []
 
-    underlay.fillStyle(style.button.fillColor, style.button.alpha);
 
     for (var i in [0,1,2,3]) {
-      const x = panelRect.x + i*(style.button.size + buttonStep) + buttonStep /2;
-      const y = panelRect.y + style.button.size;
+      const x = panel.x + i*(buttonSize + buttonStep) + buttonStep /2;
+      const y = panel.y + buttonSize;
       buttonPos.push({x: x, y: y});
-
-      underlay.fillRoundedRect(
-        x, y,
-        style.button.size, style.button.size,
-        style.button.borderRadius
-      );
-      underlay.lineStyle(style.button.borderWidth, style.button.shadowColor, style.button.alpha);
-      underlay.beginPath();
-      underlay.moveTo(x, y+style.button.size-style.button.borderWidth);
-      underlay.lineTo(x+style.button.size-style.button.borderWidth,
-                      y+style.button.size-style.button.borderWidth);
-      underlay.lineTo(x+style.button.size-style.button.borderWidth, y);
-      underlay.strokePath();
-
-      underlay.lineStyle(style.button.borderWidth, style.button.highlightColor, style.button.alpha);
-      underlay.beginPath();
-      underlay.moveTo(x+style.button.borderWidth,
-                      y+style.button.size-style.button.borderWidth);
-      underlay.lineTo(x+style.button.borderWidth,
-                      y+style.button.borderWidth);
-      underlay.lineTo(x+style.button.size-style.button.borderWidth,
-                      y+style.button.borderWidth);
-      underlay.strokePath();
-
-      if (!this.scene.sys.game.device.os.iOs &&
-          !this.scene.sys.game.device.os.android)
-      {
-        const hotkey = Number(i) + 1;
-        ui.add(this.scene.add.text(
-          x + style.button.size + style.hotkey.margins.left,
-          y,
-          hotkey,
-          style.hotkey
-        ));
-      }
     }
-    ui.addAt(underlay, 1);
 
     const coinsLabel = this.coinsLabel = this.scene.add.container();
     const coinsIcon = this.scene.add.sprite( 0, 0,
@@ -234,7 +116,7 @@ export default class SceneUI extends Phaser.Events.EventEmitter
     coinsText.name = "label"
     coinsLabel.add(coinsText);
     coinsLabel.add(coinsIcon);
-    coinsLabel.setPosition(panelRect.x + style.button.size, style.label.margins.top)
+    coinsLabel.setPosition(panel.x + style.button.size, style.label.margins.top)
     ui.add(coinsLabel);
 
     const timeLabel = this.timeLabel = this.scene.add.container();
@@ -259,32 +141,36 @@ export default class SceneUI extends Phaser.Events.EventEmitter
     timeLabel.add(timeIconShadow);
     timeLabel.add(timeIcon);
     timeLabel.add(timeText);
-    timeLabel.setPosition((panelRect.x + panelRect.width)/2 + style.button.size + buttonStep /2, style.label.margins.top);
+    timeLabel.setPosition(
+      (panel.x + panel.width)/2 + style.button.size + buttonStep /2,
+      style.label.margins.top
+    );
     ui.add(this.timeLabel);
 
     const maker = new MakerButtonBuilder(ui, style.button);
     const buttons = {
       "player" : Object.keys(this.levelPlayer.player.keys)
                  .concat(["replay"])
-                 .map((name, i)=>maker.makeButton(buttonPos[i], name)),
+                 .map((name, i) => this.makeButton(name, buttonSize, buttonPos[i])),
       "editor" : Object.keys(this.levelEditor.keys)
                  .concat(["play"])
-                 .map((name, i)=>maker.makeButton(buttonPos[i], name))
+                 .map((name, i) => this.makeButton(name, buttonSize, buttonPos[i])),
     }
 
     this.buttons = { "player": Object(), "editor": Object() };
     Object.keys(buttons).forEach((key)=>{
       buttons[key].forEach((button)=>{
         this.buttons[key][button.name] = button;
-        ui.add(button);
+        panel.add(button);
       });
     });
 
-    ui.setPosition(bounds.x, bounds.y);
+    panel.setPosition(bounds.x, bounds.y);
   }
 
   createPopup(text, buttons, style)
   {
+    console.log(style);
     const ui = this.scene.add.container();
     const panel = this.scene.add.graphics();
     const {widthInPixels, heightInPixels} = this.scene.map.layers[0];
@@ -308,7 +194,9 @@ export default class SceneUI extends Phaser.Events.EventEmitter
     panel.strokeRoundedRect(panelRect.x, panelRect.y, panelRect.width, panelRect.height,
       style.panel.borderRadius
     );
-    ui.add(panel);
+    panel.generateTexture("PopupPanel", bounds.width, bounds.height);
+    panel.destroy();
+    ui.add(this.scene.add.sprite(0,0,"PopupPanel"));
 
     const underlay = this.underlay = this.scene.add.graphics();
     const buttonStep = panelRect.width / buttons.length - style.button.size;
@@ -317,7 +205,7 @@ export default class SceneUI extends Phaser.Events.EventEmitter
     underlay.fillStyle(style.button.fillColor, style.button.alpha);
     buttons.forEach((name,i) =>
     {
-      const x = panelRect.x + i*(style.button.size + buttonStep) + buttonStep /2;
+      const x = panel.x + i*(style.button.size + buttonStep) + buttonStep /2;
       const y = panelRect.y + (panelRect.height + style.button.size)/2;
 
       underlay.fillRoundedRect(
@@ -359,6 +247,30 @@ export default class SceneUI extends Phaser.Events.EventEmitter
 
     //document.body.appendChild(document.createChild("<a href="+link+">"+link+"</a>"));
     return ui;
+  }
+
+  makeButton(name, buttonSize, position)
+  {
+    var button = null;
+    if (this.scene.xui.SystemButtons.hasOwnProperty(name))
+    {
+      button = this.scene.xui.add[name+"Button"](this.style.button,
+        buttonSize, buttonSize);
+    }
+    else if (name == "erase")
+    {
+      button = this.scene.xui.add.cancelButton(this.style.button,
+        buttonSize, buttonSize);
+    }
+    else
+    {
+      button = this.scene.xui.add.imageButton(this.style.button,
+        buttonSize, buttonSize,
+        XRender.make.copy(this.scene, SceneTileEditor.Mode[name].sprite));
+    }
+    button.setPosition(position.x, position.y);
+    button.name = name;
+    return button;
   }
 
   update()

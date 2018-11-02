@@ -26,7 +26,7 @@ export default class XOk extends XSprite
     //       +
     //
     let centerTop = {x: center.x, y: center.y};
-    let centerBottom = {x: center.x, y: bottomRight.y - offset};
+    let centerBottom = {x: center.x, y: center.y + 2*offset};
     let topLeftRight = {x: center.x - 1.5*offset, y: center.y - 1.5*offset};
     let topLeftLeft = {x: center.x - 2.5*offset, y: center.y - 0.5*offset};
     let topRightLeft = {x: bottomRight.x, y: topLeft.y};

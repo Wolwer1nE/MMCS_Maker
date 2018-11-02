@@ -13,7 +13,8 @@ export default class XPanel extends XView
 
   __init(params)
   {
-    this.add(XRender.make.rect(this.scene, this.style, this.width, this.height).sprite);
+    let underlay = XRender.make.rect(this.scene, this.style, this.width, this.height);
+    this.add(underlay);
   }
 
 }

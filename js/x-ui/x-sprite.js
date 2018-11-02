@@ -10,6 +10,10 @@ export class XRender
       throw new TypeError("Abstract class 'XRender' cannot be instantiated directly.");
     }
 
+    if (this.drawGraphics === undefined) {
+      throw new TypeError("Classes extending the render abstract class must return sprites");
+    }
+
     this.scene = scene;
     this.style = style;
   }
@@ -30,10 +34,6 @@ export default class XSprite extends XRender
   {
     super(scene, style);
 
-    if (this.drawGraphics === undefined) {
-      throw new TypeError("Classes extending the render abstract class must return sprites");
-    }
-
     this.width = width ? width : style.width;
     this.height = height ? height : style.height;
 
@@ -46,6 +46,8 @@ export default class XSprite extends XRender
     this.frame = frame
   }
 
+  drawGraphics() {}
+
   get sprite()
   {
     if (!this.scene.textures.exists(this.key))
@@ -55,7 +57,7 @@ export default class XSprite extends XRender
       graphics.generateTexture(this.key, this.width, this.height);
       graphics.destroy();
     }
-    else console.log("reused: ",this.key);
-    return this.scene.add.sprite(0, 0, this.key, this.frame ).setOrigin(0,0);
+    else console.log("reused: ", this.key);
+    return this.scene.add.sprite(0, 0, this.key, this.frame).setOrigin(0,0);
   }
 }

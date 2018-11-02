@@ -6,14 +6,18 @@
          "bottom":2,
          "right":2
       },
-      "borderWidth":2,
-      "borderRadius":5,
+      "borderStyle": "plain",
+      "borderWidth": 3,
+      "borderRadius": 5,
       "borderColor": "0x000000",
       "fillColor": "0xf0d0b0",
-      "alpha":1
+      "alpha": 1
+   },
+   "overlay":{
+     "fillColor": "0x0",
+     "alpha": 0.5
    },
    "button":{
-      "size":48,
       "borderStyle":"raised",
       "borderWidth":2,
       "borderRadius":3,
@@ -35,21 +39,12 @@
          "top":2
       },
       "color":"#e86010",
-      "font":"22px Menlo",
+      "font":"22px Arial Black",
       "align":"center",
-      "shadow":{
+      "shadow":
+      {
          "offsetX":2,
          "offsetY":2,
-         "fill":true
-      }
-   },
-   "popup":{
-      "color":"#e86010",
-      "font":"bold 18px Arial",
-      "align":"center",
-      "shadow":{
-         "offsetX":1,
-         "offsetY":1,
          "fill":true
       }
    },

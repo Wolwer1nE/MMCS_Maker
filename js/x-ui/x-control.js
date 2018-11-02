@@ -6,8 +6,7 @@ import XView from "./x-view.js";
 
 export default class XControl extends XView
 {
-
-  static get Events() {
+   static get Events() {
     return {
       "onPointerDown":"onPointerDown",
       "onPointerUp":"onPointerUp",
@@ -19,6 +18,17 @@ export default class XControl extends XView
     super(scene, style, width, height, params);
     this.__isDown = false;
     this.__isUp = true;
+    this.__hotkey = null;
+    this.setInteractive(this.underlay, this.onHitCheck);
+  }
+
+  onHitCheck(area,x,y,me)
+  {
+    let pointer = me.scene.input.activePointer;
+    let bounds = new Phaser.Geom.Rectangle();
+    area.getBounds(bounds);
+    return Phaser.Geom.Rectangle.Contains(bounds,pointer.position.x, pointer.position.y);
+
   }
 
   onPointerDown(pointer)

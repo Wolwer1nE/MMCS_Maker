@@ -71,6 +71,16 @@ XRender.make.up = (sc,st,w,h) =>
   return new XUp(sc,st,w,h).sprite;
 };
 
+import XSprite from "./x-sprite.js";
+XRender.make.copy = (sc,sp,w,h) =>
+{
+  return new XSprite(sc, null,
+    w?w:sp.width,
+    h?h:sp.height,
+    sp.texture.key,
+    sp.frame.name).sprite;
+};
+
 XRender.SystemSprites = {};
 Object.keys(XRender.make).forEach((k)=>
 {

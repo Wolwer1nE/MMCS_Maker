@@ -13,30 +13,35 @@ export default class XView extends Phaser.GameObjects.Container
     }
 
     this.style = style;
-    if (style.margins)
-    {
-      width = width -
-      (style.margins.left ? style.margins.left : 0) -
-      (style.margins.right ? style.margins.right : 0);
-      height = height -
-      (style.margins.top ? style.margins.top : 0) -
-      (style.margins.bottom ? style.margins.bottom : 0);
-    }
+    // if (style.margins)
+    // {
+    //   width = width -
+    //   (style.margins.left ? style.margins.left : 0) -
+    //   (style.margins.right ? style.margins.right : 0);
+    //   height = height -
+    //   (style.margins.top ? style.margins.top : 0) -
+    //   (style.margins.bottom ? style.margins.bottom : 0);
+    //
+    //   super.setPosition((style.margins.left ? style.margins.left : 0),
+    //   (style.margins.top ? style.margins.top : 0));
+    // }
 
     this.width = width;
     this.height = height;
     this.content = null;
     this.__init(params);
+
   }
 
   setPosition(x,y)
   {
-    if (style.margins)
-    {
-      x = x + (style.margins.left ? style.margins.left : 0);
-      if (y)
-        y = y + (style.margins.top ? style.margins.top : 0);
-    }
+    // let style = this.style;
+    // if (style && style.margins)
+    // {
+    //   x = x + (style.margins.left ? style.margins.left : 0);
+    //   if (y)
+    //     y = y + (style.margins.top ? style.margins.top : 0);
+    // }
     super.setPosition(x,y);
   }
 }
