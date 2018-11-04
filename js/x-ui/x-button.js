@@ -41,6 +41,7 @@ export class XButton extends XControl
       this.content.setScale(x,y);
     }
     this.add(this.content);
+    this.name = params.name;
   }
 
   static get Events()
@@ -51,23 +52,23 @@ export class XButton extends XControl
 
 export class XImageButton extends XButton
 {
-  constructor(scene, style, width, height, sprite)
+  constructor(scene, style, width, height, name, sprite)
   {
     super(scene, style, width, height,
-      { type: "image", data: sprite }
+      { name: name, type: "image", data: sprite }
     );
   }
 }
 
 export class XSystemButton extends XImageButton
 {
-  constructor(scene, style, width, height, type)
+  constructor(scene, style, width, height, name, type)
   {
     if (!XSystemButton.Type.hasOwnProperty(type))
     {
       throw new TypeError("Wrong system button type: "+ type)
     }
-    super(scene, style, width, height,
+    super(scene, style, width, height, name,
       XRender.make[type](scene, style, width, height));
   }
 
@@ -88,10 +89,10 @@ export class XSystemButton extends XImageButton
 
 export class XTextButton extends XButton
 {
-  constructor(scene, style, width, height, text)
+  constructor(scene, style, width, height, name, text)
   {
     super(scene, style, width, height,
-      { type: "text", data: text }
+      { name: name, type: "text", data: text }
     );
   }
 }

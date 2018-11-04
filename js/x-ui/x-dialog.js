@@ -51,7 +51,10 @@ export default class XDialog extends XView
             () => this.onSuccess(buttonKey) :
             () => this.onCancel(buttonKey)
         );
+
         button.name = buttonKey;
+        this.buttons[buttonKey] = button;
+
         button.setPosition(
           i * (buttonSize + buttonOffset) + buttonOffset/2,
           (this.height + this.height/2 - buttonSize) / 2

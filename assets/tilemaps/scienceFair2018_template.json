@@ -7,6 +7,12 @@
          "id":5,
          "name":"Background",
          "opacity":1,
+         "properties":[
+                {
+                 "name":"static",
+                 "type":"bool",
+                 "value":true
+                }],
          "type":"tilelayer",
          "visible":true,
          "width":16,
@@ -19,6 +25,12 @@
          "id":1,
          "name":"Ground",
          "opacity":1,
+         "properties":[
+                {
+                 "name":"static",
+                 "type":"bool",
+                 "value":false
+                }],
          "type":"tilelayer",
          "visible":true,
          "width":16,
@@ -86,6 +98,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -95,6 +117,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -104,6 +136,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -113,6 +155,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -122,6 +174,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -131,6 +193,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -140,6 +212,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -149,6 +231,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -158,6 +250,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -167,6 +269,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -176,6 +288,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":"coin"
                         }]
                 }, 
                 {
@@ -185,6 +307,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -194,6 +326,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -203,6 +345,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":true
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -212,6 +364,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":true
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -221,6 +383,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":true
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":"brick"
                         }]
                 }, 
                 {
@@ -230,6 +402,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -239,6 +421,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -248,6 +440,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -257,6 +459,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":true
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -268,9 +480,14 @@
                          "value":true
                         }, 
                         {
-                         "name":"collidesTop",
+                         "name":"editable",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -282,9 +499,14 @@
                          "value":true
                         }, 
                         {
-                         "name":"collidesTop",
+                         "name":"editable",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -294,6 +516,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -303,6 +535,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -312,6 +554,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -321,6 +573,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -330,6 +592,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":true
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -339,6 +611,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":true
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -348,6 +630,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":true
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -357,6 +649,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -366,6 +668,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -375,6 +687,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -384,6 +706,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -393,6 +725,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -402,6 +744,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -411,6 +763,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -420,6 +782,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -429,6 +801,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -438,6 +820,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -447,6 +839,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":true
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -456,6 +858,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -465,6 +877,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -474,6 +896,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }, 
                 {
@@ -483,6 +915,16 @@
                          "name":"collides",
                          "type":"bool",
                          "value":false
+                        }, 
+                        {
+                         "name":"editable",
+                         "type":"bool",
+                         "value":false
+                        }, 
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":""
                         }]
                 }],
          "tilewidth":32

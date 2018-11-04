@@ -33,9 +33,9 @@ export default class XReplay extends XSprite
     graphics.beginPath();
     graphics.arc(center.x, center.y, radiusOut, startAngle, endAngle);
     graphics.arc(center.x, center.y, radiusIn, endAngle, startAngle, true);
-    graphics.lineTo(center.x - style.borderWidth*2, center.y);
-    graphics.lineTo(center.x - style.borderWidth*5, center.y + style.borderWidth*3);
-    graphics.lineTo(center.x - style.borderWidth*8, center.y);
+    graphics.lineTo(center.x - radiusIn + style.borderWidth*2, center.y);
+    graphics.lineTo(center.x - (radiusOut+radiusIn)/2, center.y + style.borderWidth*3);
+    graphics.lineTo(center.x - radiusOut - style.borderWidth*2, center.y);
     graphics.closePath();
     graphics.fillPath();
 
@@ -49,8 +49,8 @@ export default class XReplay extends XSprite
         graphics.strokePath();
         graphics.lineStyle(style.borderWidth, style.highlightColor, style.alpha);
         graphics.beginPath();
-        graphics.lineTo(center.x-style.borderWidth*2, center.y);
-        graphics.lineTo(center.x-style.borderWidth*5, center.y+style.borderWidth*3);
+        graphics.lineTo(center.x - radiusIn + style.borderWidth*2, center.y);
+        graphics.lineTo(center.x - (radiusOut+radiusIn)/2, center.y + style.borderWidth*3);
         graphics.strokePath();
         graphics.beginPath();
         graphics.arc(center.x, center.y, radiusIn, startAngle*1.05, 3*Phaser.Math.TAU);

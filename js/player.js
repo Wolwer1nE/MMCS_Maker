@@ -19,7 +19,7 @@ export default class Player extends Phaser.Events.EventEmitter
     Object.freeze(Player.Events);
 
     // Create the animations we need from the player spritesheet
-    const anims = scene.anims;
+    let anims = scene.anims;
     anims.create({
       key: "player-idle",
       frames: anims.generateFrameNumbers("player", { start: 0, end: 2 }),
@@ -42,8 +42,8 @@ export default class Player extends Phaser.Events.EventEmitter
       .setOffset(7, 9);
 
     // Track the arrow keys & WASD
-    const { LEFT, RIGHT, UP, ONE, TWO, THREE } = Phaser.Input.Keyboard.KeyCodes;
-    const key = scene.input.keyboard.addKeys({
+    let { LEFT, RIGHT, UP, ONE, TWO, THREE } = Phaser.Input.Keyboard.KeyCodes;
+    let key = scene.input.keyboard.addKeys({
       left: LEFT,
       right: RIGHT,
       up: UP,
@@ -65,7 +65,8 @@ export default class Player extends Phaser.Events.EventEmitter
     this.sprite.body.moves = false;
   }
 
-  reset(position) {
+  reset(position)
+  {
     this.sprite.setPosition(position.x, position.y);
     this.sprite.setAccelerationX(0);
     this.sprite.setVelocityX(0);
@@ -73,10 +74,11 @@ export default class Player extends Phaser.Events.EventEmitter
     this.sprite.setVelocityY(0);
   }
 
-  update(keys) {
-    const sprite = this.sprite;
-    const onGround = sprite.body.blocked.down;
-    const acceleration = onGround ? 600 : 200;
+  update(keys)
+  {
+    let sprite = this.sprite;
+    let onGround = sprite.body.blocked.down;
+    let acceleration = onGround ? 600 : 200;
 
     if (keys)
     {

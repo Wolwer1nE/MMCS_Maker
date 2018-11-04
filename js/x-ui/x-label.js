@@ -12,7 +12,8 @@ export default class XLabel extends XView
 
   __init(params)
   {
-    this.content = this.scene.add.text(0, 0, params.data, this.style);
-    this.add(this.content);
+    let content = this.content = this.scene.add.text(0, 0, params.data, this.style);
+    content.setPosition(content.x, (this.height - content.height)/2);
+    this.add(content);
   }
 }
