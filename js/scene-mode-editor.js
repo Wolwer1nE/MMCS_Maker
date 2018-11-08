@@ -105,11 +105,6 @@ export default class SceneModeEditor extends SceneMode
     }
   }
 
-  saveLevelData(zipped)
-  {
-    this.scene.levelStorage.setData(this.map.dynamicLayerData);
-  }
-
   update(time, delta)
   {
     let pointer = this.scene.input.activePointer;
@@ -130,13 +125,13 @@ export default class SceneModeEditor extends SceneMode
     {
       if (this.map.canRemoveAt(worldPoint)) {
         this.map.removeTileAt(worldPoint);
-        this.saveLevelData();
+        this.map.save();
       }
     }
     else if (this.map.canPutAt(worldPoint))
     {
       this.map.putTile(this.mode.tile, worldPoint);
-      this.saveLevelData();
+      this.map.save();
     }
   }
 

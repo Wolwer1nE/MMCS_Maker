@@ -112,4 +112,19 @@ export default class SceneMap extends Phaser.Tilemaps.Tilemap
     });
     return levelData;
   }
+
+  save()
+  {
+    this.scene.levelStorage.setData(this.dynamicLayerData);
+  }
+
+  load(levelData)
+  {
+    if (levelData === undefined)
+      levelData = this.scene.levelStorage.getData();
+
+    if (levelData == null) return;
+
+    this.dynamicLayerData = levelData;
+  }
 }

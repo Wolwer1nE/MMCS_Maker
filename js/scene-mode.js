@@ -37,6 +37,7 @@ export default class SceneMode extends Phaser.Events.EventEmitter
   {
     this.ui.setVisible(true);
     this.setHotkeysEnabled(true);
+    this.active = true;
   }
 
   update(time, delta)
@@ -46,6 +47,7 @@ export default class SceneMode extends Phaser.Events.EventEmitter
   {
     this.ui.setVisible(false);
     this.setHotkeysEnabled(false);
+    this.active = false;
   }
 
   get ui()

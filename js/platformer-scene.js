@@ -99,13 +99,13 @@ export default class PlatformerScene extends Phaser.Scene
     this.levelStorage = new SceneStorage("levelData", options.levelId, BACKEND_LEVEL_API);
     if (options.levelId) {
       this.levelStorage.loadData().then(
-        (r) => this.resetLevelData(r),
+        (r) => this.map.load(r),
         (e) => {
           //console.log(e);
-          this.resetLevelData(this.levelStorage.getData());
+          this.map.load();
       });
     } else {
-      this.resetLevelData(this.levelStorage.getData());
+      this.map.load();
     }
   }
 
@@ -122,13 +122,6 @@ export default class PlatformerScene extends Phaser.Scene
 
     this.__mode = newMode;
     this.__mode.enter();
-  }
-
-  resetLevelData(levelData)
-  {
-    if (levelData == null) return;
-
-    this.map.dynamicLayerData = levelData;
   }
 
   update(time, delta) {

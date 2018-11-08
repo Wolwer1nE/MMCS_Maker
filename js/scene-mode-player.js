@@ -26,8 +26,6 @@ export default class SceneModePlayer extends SceneMode
     player.sprite.body.collideWorldBounds = true;
 
     this.finish = map.findObject("Objects", obj => obj.name === "finishPoint");
-
-    this.levelStarted = false;
   }
 
   __initUI(layer)
@@ -92,29 +90,27 @@ export default class SceneModePlayer extends SceneMode
 
   enter()
   {
-    super.enter();
-    this.levelStarted = true;
+    this.map.setTileIndexCallback(this.collectible, this.onCoinTouched, this, this.map.layer.tilemapLayer);
 
     this.coinsCollected = 0;
     this.coinsTotal = this.map.filterTiles( tile => tile.index == this.collectible).length;
-    this.map.setTileIndexCallback(this.collectible, this.onCoinTouched, this, this.map.layer.tilemapLayer);
     this.coinsLabel.content.text = this.coinsCollected +"/"+ this.coinsTotal;
     this.startTimer();
+
+    super.enter();
   }
 
   leave()
   {
-    super.leave();
-    this.levelStarted = false;
     this.player.reset(this.spawnPoint);
     this.stopTimer();
-    this.scene.resetLevelData(this.scene.levelStorage.getData());
+    this.map.load();
+
+    super.leave();
   }
 
   update(time, delta)
   {
-    if (!this.levelStarted) return;
-
     if (this.player.sprite.y > this.map.layer.tilemapLayer.height)
     {
       this.player.emit(Player.Events.death);
