@@ -20,8 +20,8 @@ export default class SceneModePlayer extends SceneMode
     this.collectible = coinIndex
 
     // Instantiate a player instance at the location of the "Spawn Point" object in the Tiled map
-    const spawnPoint = this.spawnPoint = this.map.findObject("Objects", obj => obj.name === "spawnPoint");
-    const player = this.player = new Player(scene, spawnPoint.x, spawnPoint.y);
+    let spawnPoint = this.spawnPoint = this.map.spawnPoint;
+    let player = this.player = new Player(scene, spawnPoint.x, spawnPoint.y);
     scene.physics.world.addCollider(player.sprite, this.layer);
     player.sprite.body.collideWorldBounds = true;
 
@@ -64,7 +64,7 @@ export default class SceneModePlayer extends SceneMode
     let coinsLabel = this.coinsLabel = this.scene.xui.add.imageLabel(
       this.scene.xui.style.label,
       dataPlate.width/6, dataPlate.height,
-      this.map.getSprite(11),
+      this.map.getSpriteForTile(11),
       "COINS"
     );
     coinsLabel.setPosition(dataPlate.width/6,
@@ -74,7 +74,7 @@ export default class SceneModePlayer extends SceneMode
     let timeLabel = this.timeLabel = this.scene.xui.add.imageLabel(
       this.scene.xui.style.label,
       dataPlate.width/6, dataPlate.height,
-      this.map.getSprite(19),
+      this.map.getSpriteForTile(19),
       "TIME"
     );
     timeLabel.setPosition(4*dataPlate.width/6,

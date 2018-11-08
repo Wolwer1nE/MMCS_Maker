@@ -9,15 +9,13 @@ export default class SceneModeEditor extends SceneMode
   constructor(scene, layer, map)
   {
     super(scene, layer, map);
-    layer.setInteractive();
+    map.layers.forEach(
+      (l) => this.scene.xui.insert(l.tilemapLayer)
+    );
+    //layer.setInteractive(true);
     this.setEditing(true);
     this.finish = map.finishPoint;
 
-    this.mode = this.modes.brick;
-  }
-
-  __initUI(layer)
-  {
     // Modes!
     this.modes = {}
     let editables = this.map.editableTiles;
@@ -25,13 +23,19 @@ export default class SceneModeEditor extends SceneMode
     {
       this.modes[name] = {
         tile: editables[name],
-        sprite: this.map.getSprite(editables[name]).setVisible(false),
+        //sprite: this.map.getSprite(editables[name]).setVisible(false),
       };
     }
     this.modes["erase"] = { tile: 0, sprite: null };
 
+    this.mode = this.modes.brick;
+  }
+
+  __initUI(layer)
+  {
     this.__ui = this.scene.add.container();
 
+    let editables = this.map.editableTiles;
     let height = this.scene.xui.screen.height - this.layer.height;
     let menu = this.scene.xui.add.menu(
       this.scene.xui.style,
@@ -39,10 +43,10 @@ export default class SceneModeEditor extends SceneMode
       Math.ceil(2*height/3),
       [ {
           name:"brick",
-          sprite: this.modes["brick"].sprite
+          sprite: this.map.getSpriteForTile(editables["brick"])
         },{
           name: "coin",
-          sprite: this.modes["coin"].sprite
+          sprite: this.map.getSpriteForTile(editables["coin"])
         },{
           name: "erase",
           type: "cancel"

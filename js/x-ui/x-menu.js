@@ -53,8 +53,8 @@ export default class XMenu extends XView
           if (buttonKey.sprite)
           {
             button = new XImageButton(this.scene,
-              buttonStyle, buttonSize, buttonSize, buttonKey.name,
-              XRender.make.copy(this.scene, buttonKey.sprite));
+              buttonStyle, buttonSize, buttonSize,
+              buttonKey.name, buttonKey.sprite);
           }
           else if (buttonKey.type)
           {

@@ -26,7 +26,22 @@ export default class PlatformerScene extends Phaser.Scene
     return options;
   }
 
-  preload() {
+  preload()
+  {
+    // var progress = this.add.graphics();
+    //
+    // this.load.on('progress',
+    //  (value) => {
+    //   progress.clear();
+    //   progress.fillStyle(0x00ffff, 1);
+    //   progress.fillRect(0, 270, 800 * value, 60);
+    // });
+    //
+    // this.load.once('complete',
+    // () => {
+    //   progress.destroy();
+    // });
+
     this.load.spritesheet(
       "player",
       "./assets/spritesheets/0x72-industrial-player-32px-extruded.png",
@@ -119,8 +134,6 @@ export default class PlatformerScene extends Phaser.Scene
   update(time, delta) {
     if (this.isPaused) return;
     this.mode.update(time, delta);
-    //this.ui.update();
-    this.levelPlayer.update(time,delta);
   }
 
   win()
@@ -149,8 +162,9 @@ export default class PlatformerScene extends Phaser.Scene
       (button) => {
         if (button == "cancel")
             this.levelStorage.removeData();
-       this.restart();
-    });
+        this.restart();
+      }
+    );
 
   }
 
@@ -160,7 +174,6 @@ export default class PlatformerScene extends Phaser.Scene
 
     const cam = this.cameras.main;
     cam.shake(100, 0.05);
-
     this.restart();
   }
 
@@ -175,7 +188,7 @@ export default class PlatformerScene extends Phaser.Scene
     cam.once("camerafadeoutcomplete", () => {
       this.editor.destroy();
       this.levelPlayer.destroy();
-      //this.ui.destroy();
+      this.__mode = undefined;
       this.scene.restart();
     });
   }

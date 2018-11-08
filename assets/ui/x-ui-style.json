@@ -1,45 +1,39 @@
 {
-   "panel":{
-      "margins":{
-         "top":1,
-         "left":1,
-         "bottom":2,
-         "right":2
-      },
+   "panel":
+   {
       "borderStyle": "plain",
       "borderWidth": 2,
       "borderRadius": 5,
-      "borderColor": "0x000000",
+      "borderColor": "0x0",
       "fillColor": "0xf0d0b0",
       "alpha": 1
    },
-   "overlay":{
+   "overlay":
+   {
      "fillColor": "0x0",
      "alpha": 0.5
    },
-   "button":{
+   "button":
+   {
       "borderStyle":"raised",
       "borderWidth":2,
       "borderRadius":3,
-      "shadowColor": "0x000000",
+      "shadowColor": "0x0",
       "fillColor": "0xe86010",
       "highlightColor": "0xf0d0b0",
       "alpha":1
    },
-   "hotkey":{
-      "margins":{
-         "left":2
-      },
+   "hotkey":
+   {
       "color":"#000000",
       "align":"left"
    },
-   "label":{
-      "margins":{
-         "left":2,
-         "top":2
-      },
+   "label":
+   {
+      "render":"bitmap",
       "color":"#e86010",
-      "font":"22px Arial Black",
+      "fontFamily":"mancraftia",
+      "fontSize":"22px",
       "align":"center",
       "shadow":
       {
@@ -49,12 +43,6 @@
       }
    },
    "marker":{
-      "margins":{
-         "top":-1,
-         "left":-1,
-         "bottom":-2,
-         "right":-2
-      },
       "width":32,
       "height":32,
       "borderWidth":2,
@@ -62,5 +50,8 @@
          "normal" : "0xffffff",
          "warning" : "0xff4f78"
       }
+   },
+   "assets":{
+     "fonts":["mancraftia"]
    }
 }

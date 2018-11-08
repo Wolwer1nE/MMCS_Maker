@@ -17,8 +17,8 @@ export default class SceneMap extends Phaser.Tilemaps.Tilemap
     let tiles = this.addTilesetImage(this.tilesets[0].name, tilesheetKey);
     this.layers.forEach (
       (layer) => {
-        let st = layer.properties.find((o) => o.name === "static")
-        if (st && st.value == true)
+        let isStatic = layer.properties.find((o) => o.name === "static")
+        if (isStatic && isStatic.value == true)
         {
           this.createStaticLayer(layer.name, tiles);
         }
@@ -53,7 +53,7 @@ export default class SceneMap extends Phaser.Tilemaps.Tilemap
     return this.__editables;
   }
 
-  getSprite(tileId)
+  getSpriteForTile(tileId)
   {
     return this.scene.add.sprite(0,0, this.tilesets[0].image.key, tileId-1)
               .setOrigin(0,0);

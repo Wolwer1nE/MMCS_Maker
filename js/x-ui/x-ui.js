@@ -25,27 +25,60 @@ export default class XUI extends Phaser.Plugins.ScenePlugin
       height: this.scene.game.canvas.height
     };
 
-    this.container = this.scene.add.container();
-    this.container.name = "XUI_Container"
-
     var eventEmitter = this.systems.events;
     //eventEmitter.on("update", this.update, this);
-    eventEmitter.once('destroy', this.destroy, this);
+    eventEmitter.on("start", this.start, this);
+    eventEmitter.on("shutdown", this.shutdown, this);
+    eventEmitter.once("destroy", this.destroy, this);
 
     this.scene.input.on("gameobjectdown", this.onObjectDown, this);
     this.scene.input.on("gameobjectup", this.onObjectUp, this);
     this.scene.input.on("pointerup", this.onPointerUp, this);
-    //this.scene.input.keyboard.on("keydown", this.onKeyboardDown, this);
   }
 
   load(styleSheet)
   {
     this.scene.load.json(XUI_STYLE, styleSheet);
-    this.scene.load.once( "complete",
-      (loader) => {
-        this.style = loader.cacheManager.json.get(XUI_STYLE);
-      }, this
-    );
+
+    this.isQueued = false;
+    this.uiFilesPath = styleSheet.replace(/\/[^\/]+$/, '/'));
+
+    this.scene.load.on("load", this.loadAssetQueue, this);
+  }
+
+  loadAssetQueue(file)
+  {
+    // If style loaded and processed  and assets are not queued yet
+    if (!file.loader.cacheManager.json.exists(XUI_STYLE) || this.isQueued)
+    { return; }
+
+    this.style = file.loader.cacheManager.json.get(XUI_STYLE);
+    if (this.style.assets)
+    {
+      if (this.style.assets.fonts)
+        this.style.assets.fonts.forEach (
+          (font) => {
+            this.scene.load.bitmapFont(font,
+              this.uiFilesPath + "/fonts/"+font+".png",
+              this.uiFilesPath + "/fonts/"+font+".fnt")
+          }
+        );
+    }
+    this.isQueued = true;
+    this.scene.load.removeListener("load", this.loadAssetQueue, this);
+  }
+
+  start()
+  {
+    console.log("XUI START");
+    this.container = this.scene.add.container();
+    this.container.name = "XUI_Container"
+  }
+
+  shutdown()
+  {
+    console.log("XUI SHUTDOWN");
+    this.container.destroy();
   }
 
   // update(time, delta)
@@ -54,7 +87,6 @@ export default class XUI extends Phaser.Plugins.ScenePlugin
 
   destroy()
   {
-    this.container.destroy();
     this.scene = undefined;
   }
 
@@ -63,7 +95,7 @@ export default class XUI extends Phaser.Plugins.ScenePlugin
     return new Promise((success, cancel) =>
     {
       let w = this.screen.width / 2;
-      let h = this.screen.height / 5;
+      let h = this.screen.height / 4;
       let st = this.style.dialog ? this.style.dialog : this.style
       let d = this.add.dialog(st, w, h, text, buttons, successButton);
       d.onSuccess = success;
@@ -86,11 +118,11 @@ export default class XUI extends Phaser.Plugins.ScenePlugin
       imageButton : (st,w,h,image) => this.__add(new XImageButton(this.scene, st, w, h, image)),
       textButton : (st,w,h,text) => this.__add(new XTextButton(this.scene, st, w, h, text)),
       systemButton : (st,w,h,key) => this.__add(new XSystemButton(this.scene, st, w, h, XSystemButton.Type[key])),
-      dialog : (st,w,h,msg,bts,ok) => this.__add(new XDialog(this.scene, st, w, h, msg, bts, ok)),
+      dialog : (st,w,h,msg,bts,ok) => this.__add(new XDialog(this.scene, st, w, h, msg, bts, ok), true),
       menu : (st,w,h,bts,spc,axs) => this.__add(new XMenu(this.scene, st, w, h, bts, spc, axs)),
     }
 
-    //SystemButtons
+    // SystemButtons
     Object.keys(XSystemButton.Type).forEach((key)=>
     {
       uis[key+"Button"] = (st,w,h) => { return uis.systemButton(st,w,h,key) };
@@ -99,9 +131,19 @@ export default class XUI extends Phaser.Plugins.ScenePlugin
     return uis;
   }
 
-  __add(v)
+  insert(object)
   {
-    this.container.add(v);
+    this.__add(object);
+  }
+
+  __add(v, front)
+  {
+    if (front)
+    {
+      this.container.add(v);
+      this.container.bringToTop(v);
+    } else
+      this.container.add(v);
     return v;
   }
 

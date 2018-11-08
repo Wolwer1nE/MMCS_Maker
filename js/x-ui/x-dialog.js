@@ -19,6 +19,16 @@ export default class XDialog extends XView
   __init(params)
   {
     let style = this.style;
+    //style.label.fixedWidth = this.width;
+    let label = new XLabel(
+      this.scene, style.label ? style.label : style,
+      this.width, this.height / 2,
+      params.text);
+    //console.log(label);
+    let newWidth = label.content.width * 1.1;
+    if (this.width < newWidth) this.width = newWidth;
+    let newHeight = label.content.height * 3;
+    if (this.height < newHeight) this.height = newHeight;
 
     let panel = this.add(new XPanel(
       this.scene, style.panel ? style.panel : style,
@@ -27,23 +37,19 @@ export default class XDialog extends XView
       (this.scene.xui.screen.width - this.width) / 2,
       (this.scene.xui.screen.height-this.height) / 2
     );
-
-    let label = new XLabel(
-      this.scene, style.label ? style.label : style,
-      this.width, this.height / 2,
-      params.text);
     panel.add(label);
     label.setPosition((this.width - label.content.width)/2, (this.height/2 - label.content.height)/2);
 
     let buttonSize = this.height / 3;
     let buttonStyle = style.button ? style.button : style;
     let buttonOffset = this.width / params.buttons.length - buttonSize;
+    this.buttons = {};
 
     params.buttons.forEach(
       (buttonKey, i) =>
       {
         let button = new XSystemButton(this.scene,
-          buttonStyle, buttonSize, buttonSize, buttonKey);
+          buttonStyle, buttonSize, buttonSize, buttonKey, buttonKey);
         panel.add(button);
 
         button.on( XButton.Events.onPointerUp,
@@ -52,7 +58,6 @@ export default class XDialog extends XView
             () => this.onCancel(buttonKey)
         );
 
-        button.name = buttonKey;
         this.buttons[buttonKey] = button;
 
         button.setPosition(
