@@ -23,24 +23,13 @@
       "highlightColor": "0xf0d0b0",
       "alpha":1
    },
-   "hotkey":
-   {
-      "color":"#000000",
-      "align":"left"
-   },
    "label":
    {
       "render":"bitmap",
-      "color":"#e86010",
+      "color":"0xe86010",
       "fontFamily":"mancraftia",
-      "fontSize":"22px",
-      "align":"center",
-      "shadow":
-      {
-         "offsetX":2,
-         "offsetY":2,
-         "fill":true
-      }
+      "fontSize":"22",
+      "align":"center"
    },
    "marker":{
       "width":32,

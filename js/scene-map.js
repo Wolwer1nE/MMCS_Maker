@@ -35,7 +35,6 @@ export default class SceneMap extends Phaser.Tilemaps.Tilemap
       if (tiles.tileProperties[index].editable == true)
         this.__editables[tiles.tileProperties[index].name] = (0|index) + 1;
     }
-    console.log(this);
   }
 
   get spawnPoint()

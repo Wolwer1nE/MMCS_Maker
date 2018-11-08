@@ -72,6 +72,7 @@ export default class Player extends Phaser.Events.EventEmitter
     this.sprite.setVelocityX(0);
     this.sprite.setAccelerationY(0);
     this.sprite.setVelocityY(0);
+    this.sprite.anims.play("player-idle", true);
   }
 
   update(keys)

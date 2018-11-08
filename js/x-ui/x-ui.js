@@ -30,10 +30,6 @@ export default class XUI extends Phaser.Plugins.ScenePlugin
     eventEmitter.on("start", this.start, this);
     eventEmitter.on("shutdown", this.shutdown, this);
     eventEmitter.once("destroy", this.destroy, this);
-
-    this.scene.input.on("gameobjectdown", this.onObjectDown, this);
-    this.scene.input.on("gameobjectup", this.onObjectUp, this);
-    this.scene.input.on("pointerup", this.onPointerUp, this);
   }
 
   load(styleSheet)
@@ -41,7 +37,7 @@ export default class XUI extends Phaser.Plugins.ScenePlugin
     this.scene.load.json(XUI_STYLE, styleSheet);
 
     this.isQueued = false;
-    this.uiFilesPath = styleSheet.replace(/\/[^\/]+$/, '/'));
+    this.uiFilesPath = styleSheet.replace(/\/[^\/]+$/, '/');
 
     this.scene.load.on("load", this.loadAssetQueue, this);
   }
@@ -73,6 +69,10 @@ export default class XUI extends Phaser.Plugins.ScenePlugin
     console.log("XUI START");
     this.container = this.scene.add.container();
     this.container.name = "XUI_Container"
+    // Init controls reaction
+    this.scene.input.on("gameobjectdown", this.onObjectDown, this);
+    this.scene.input.on("gameobjectup", this.onObjectUp, this);
+    this.scene.input.on("pointerup", this.onPointerUp, this);
   }
 
   shutdown()
@@ -149,14 +149,12 @@ export default class XUI extends Phaser.Plugins.ScenePlugin
 
   onObjectDown(pointer, object)
   {
-    //console.log("down");
     if (object instanceof XControl)
       object.onPointerDownInside(pointer);
   }
 
   onObjectUp(pointer, object)
   {
-    //console.log("up");
     if (object instanceof XControl &&
         object.isDown)
       object.onPointerUpInside(pointer);

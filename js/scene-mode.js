@@ -67,6 +67,7 @@ export default class SceneMode extends Phaser.Events.EventEmitter
           .on("keydown_"+keyName, control.onPointerDownInside, control)
           .on("keyup_"+keyName, control.onPointerUpInside, control);
       } else {
+        control.onPointerUpOutside(this.scene.input.activePointer);
         this.scene.input.keyboard
           .off("keydown_"+keyName, control.onPointerDownInside, control)
           .off("keyup_"+keyName, control.onPointerUpInside, control);

@@ -68,7 +68,7 @@ export default class SceneModePlayer extends SceneMode
       "COINS"
     );
     coinsLabel.setPosition(dataPlate.width/6,
-      (dataPlate.height - coinsLabel.content.height)/ 2);
+      (dataPlate.height - coinsLabel.height)/ 2);
     dataPlate.add(coinsLabel);
 
     let timeLabel = this.timeLabel = this.scene.xui.add.imageLabel(
@@ -78,7 +78,7 @@ export default class SceneModePlayer extends SceneMode
       "TIME"
     );
     timeLabel.setPosition(4*dataPlate.width/6,
-      (dataPlate.height - timeLabel.content.height)/2);
+      (dataPlate.height - timeLabel.height)/2);
     dataPlate.add(timeLabel);
 
     this.__ui.setVisible(false);
@@ -108,6 +108,7 @@ export default class SceneModePlayer extends SceneMode
     this.levelStarted = false;
     this.player.reset(this.spawnPoint);
     this.stopTimer();
+    this.scene.resetLevelData(this.scene.levelStorage.getData());
   }
 
   update(time, delta)

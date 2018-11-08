@@ -15,10 +15,12 @@ export default class XImageLabel extends XLabel
     super.__init(params.data);
 
     let sprite = this.sprite = params.data.image;
-    let h = sprite.height/this.height;
-    sprite.setScale(h);
+    //let h = this.height/sprite.height;
+    //sprite.setScale(h);
     this.add(sprite);
 
-    this.content.setPosition(sprite.width, sprite.y);
+    sprite.setPosition(0, (this.height - this.sprite.height) / 2 );
+    this.content.setPosition(sprite.width * sprite.scaleX,
+      sprite.y + sprite.height* sprite.scaleY - this.content.height);
   }
 }

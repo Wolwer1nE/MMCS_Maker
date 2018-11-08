@@ -12,19 +12,28 @@ export default class XLabel extends XView
 
   __init(params)
   {
-    switch (this.style.render)
+    let textStyle = this.style;
+    switch (textStyle.render)
     {
       case "bitmap":
+        textStyle.fontSize = textStyle.fontSize.replace(/px/g, "",);
+        textStyle.color = textStyle.color.replace(/#/g, "0x");
+
         this.content = this.scene.add.bitmapText(0, 0,
-          this.style.fontFamily,
+          textStyle.fontFamily,
           params.data,
-          this.style.fontSize.replace(/px/g, "",),
-          this.style.align
+          textStyle.fontSize,
+          textStyle.align
         );
-        this.content.tint = this.style.color.replace(/#/g, "0x");
+        this.content.tint = textStyle.color;
+
         break;
       default:
-        this.content = this.scene.add.text(0, 0, params.data, this.style);
+        if (!textStyle.fontSize.endsWith("px"))
+          textStyle.fontSize =textStyle.fontSize.concat("px");
+        textStyle.color = textStyle.color.replace(/0x/g, "#");
+
+        this.content = this.scene.add.text(0, 0, params.data, textStyle);
     }
 
     let content = this.content;

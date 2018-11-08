@@ -101,7 +101,7 @@ export default class PlatformerScene extends Phaser.Scene
       this.levelStorage.loadData().then(
         (r) => this.resetLevelData(r),
         (e) => {
-          console.log(e);
+          //console.log(e);
           this.resetLevelData(this.levelStorage.getData());
       });
     } else {
