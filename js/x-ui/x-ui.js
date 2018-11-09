@@ -97,7 +97,7 @@ export default class XUI extends Phaser.Plugins.ScenePlugin
       let w = this.screen.width / 2;
       let h = this.screen.height / 4;
       let st = this.style.dialog ? this.style.dialog : this.style
-      let d = this.add.dialog(st, w, h, text, buttons, successButton);
+      let d = this.dialog = this.add.dialog(st, w, h, text, buttons, successButton);
       d.onSuccess = success;
       d.onCancel = cancel;
     });
@@ -150,14 +150,20 @@ export default class XUI extends Phaser.Plugins.ScenePlugin
   onObjectDown(pointer, object)
   {
     if (object instanceof XControl)
+    {
+      // when we have a dialog window lock the controls to dialog only
+      if (this.dialog && !this.dialog.hasChild(object))
+        return;
       object.onPointerDownInside(pointer);
+    }
   }
 
   onObjectUp(pointer, object)
   {
-    if (object instanceof XControl &&
-        object.isDown)
+    if (object instanceof XControl && object.isDown)
+    {
       object.onPointerUpInside(pointer);
+    }
   }
 
   onPointerUp(pointer)

@@ -20,4 +20,27 @@ export default class XView extends Phaser.GameObjects.Container
     this.content = null;
     this.__init(params);
   }
+
+  hasChild(object)
+  {
+    return XView.__childLookup(object, this);
+  }
+
+  static __childLookup(object, container)
+  {
+    if (container === object)
+      return true;
+
+    return container.list.some(
+      (child) => {
+        if (child === object)
+          return true;
+        else if (child instanceof Phaser.GameObjects.Container &&
+          XView.__childLookup(object, child))
+          return true;
+        else
+          return false;
+      }
+    );
+  }
 }

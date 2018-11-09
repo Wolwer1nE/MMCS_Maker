@@ -54,8 +54,8 @@ export default class XDialog extends XView
 
         button.on( XButton.Events.onPointerUp,
           buttonKey == params.successButton ?
-            () => this.onSuccess(buttonKey) :
-            () => this.onCancel(buttonKey)
+            () => { this.onSuccess(buttonKey); this.destroy(); } :
+            () => { this.onCancel(buttonKey); this.destroy(); }
         );
 
         this.buttons[buttonKey] = button;
@@ -65,5 +65,12 @@ export default class XDialog extends XView
           (this.height + this.height/2 - buttonSize) / 2
         );
     });
+  }
+
+  destroy()
+  {
+    if (this.scene.xui.dialog === this)
+      this.scene.xui.dialog = null;
+    super.destroy();
   }
 }
