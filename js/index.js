@@ -3,6 +3,7 @@
  */
 
 import PlatformerScene from "./platformer-scene.js";
+import XUI from "./x-ui/x-ui.js";
 
 const config = {
   type: Phaser.AUTO,
@@ -37,8 +38,14 @@ const config = {
         resizeCameras: true,
         snap: null
       }
+    }],
+    scene: [{
+      key: "XUI",
+      plugin: XUI,
+      mapping: "xui",
     }]
   }
 };
-localStorage.removeItem("levelData");
+
+//localStorage.removeItem("levelData");
 const game = new Phaser.Game(config);

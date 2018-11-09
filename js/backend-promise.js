@@ -27,27 +27,27 @@ export default class BackendPromise extends Phaser.Events.EventEmitter
       "Charset" : "UTF-8"
     };
 
-    return this.__request("POST", url, headers, data);
+    return BackendPromise.__request("POST", url, headers, data);
   }
 
   getAll()
   {
-    return this.__request("GET", this.baseURL);
+    return BackendPromise.__request("GET", this.baseURL);
   }
 
   get(id)
   {
     const url = this.baseURL + "/"+ id;
-    return this.__request("GET", url);
+    return BackendPromise.__request("GET", url);
   }
 
   shorten(link)
   {
     const url = "https://clck.ru/--?url=" + link;
-    return this.__request("GET", url);
+    return BackendPromise.__request("GET", url);
   }
 
-  __request(type, url, headers, data)
+  static __request(type, url, headers, data)
   {
     return new Promise((succeed, fail) =>
     {

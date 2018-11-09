@@ -96,7 +96,7 @@ export default class SceneStorage extends Phaser.Events.EventEmitter
       this.backend.send(rawData).then(
         (response) =>
         {
-          const result = JSON.Parse(response);
+          const result = JSON.parse(response);
           this.__setData(this.idFromKey(key), result.id);
           success(result);
         },

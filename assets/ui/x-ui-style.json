@@ -1,0 +1,46 @@
+{
+   "panel":
+   {
+      "borderStyle": "plain",
+      "borderWidth": 2,
+      "borderRadius": 5,
+      "borderColor": "0x0",
+      "fillColor": "0xf0d0b0",
+      "alpha": 1
+   },
+   "overlay":
+   {
+     "fillColor": "0x0",
+     "alpha": 0.5
+   },
+   "button":
+   {
+      "borderStyle":"raised",
+      "borderWidth":2,
+      "borderRadius":3,
+      "shadowColor": "0x0",
+      "fillColor": "0xe86010",
+      "highlightColor": "0xf0d0b0",
+      "alpha":1
+   },
+   "label":
+   {
+      "render":"bitmap",
+      "color":"0xe86010",
+      "fontFamily":"mancraftia",
+      "fontSize":"22",
+      "align":"center"
+   },
+   "marker":{
+      "width":32,
+      "height":32,
+      "borderWidth":2,
+      "borderColor":{
+         "normal" : "0xffffff",
+         "warning" : "0xff4f78"
+      }
+   },
+   "assets":{
+     "fonts":["mancraftia"]
+   }
+}

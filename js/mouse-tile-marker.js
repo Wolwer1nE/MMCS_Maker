@@ -2,15 +2,18 @@
  * A class that visualizes the mouse position within a tilemap. Call its update method from the
  * scene's update and call its destroy method when you're done with it.
  */
-export default class MouseTileMarker {
 
-  constructor(scene, style) {
-    this.scene = scene;
-    this.style = style;
+import XView from "./x-ui/x-view.js"
 
-    MouseTileMarker.Highlight = { "normal":"normal", "warning":"warning" };
-    Object.freeze(MouseTileMarker.Highlight);
+export default class MouseTileMarker extends XView
+{
+  static get Highlight()
+  {
+    return { "normal" : "normal", "warning" : "warning" };
+  }
 
+  constructor(scene, style, width, height)
+  {
     this.normal = scene.add.graphics();
     this.eraser = scene.add.graphics();
 
@@ -19,17 +22,6 @@ export default class MouseTileMarker {
 
     this.setHighlight(MouseTileMarker.Highlight.normal);
     this.setVisible(false);
-  }
-
-  setVisible(newVisible)
-  {
-    if(newVisible == this.visible) return;
-
-    this.visible = newVisible;
-
-    this.graphics.visible = this.visible;
-    if (this.sprite)
-      this.sprite.visible = this.visible;
   }
 
   setHighlight(newHighlight)
@@ -58,22 +50,19 @@ export default class MouseTileMarker {
     }
   }
 
-  setSprite(newSprite)
+  set sprite(newSprite)
   {
-    if (this.sprite == newSprite) return;
+    if (this.__sprite == newSprite) return;
 
     var pos = null;
-    if (this.sprite)
+    if (this.__sprite)
     {
-      this.sprite.setVisible(false);
+      this.__sprite.setVisible(false);
       //this.sprite.setPosition(0,0);
-      pos = this.sprite.position;
+      pos = this.__sprite.position;
     }
 
-    this.graphics.visible = false;
-
-
-    this.sprite = newSprite;
+    this.__sprite = newSprite;
     if (newSprite)
     {
       newSprite.setVisible(this.visible);
@@ -84,8 +73,6 @@ export default class MouseTileMarker {
     }
     else
       this.graphics = this.eraser;
-
-    this.graphics.visible = this.visible;
   }
 
   updateFor(event)
