@@ -68,14 +68,7 @@ export default class PlatformerScene extends Phaser.Scene
     this.isEditing = true;
     let options = this.options = PlatformerScene.parseURL(window.location.search);
     // remove params
-<<<<<<< HEAD
     history.pushState({}, null, window.location.origin + window.location.pathname);
-=======
-    history.pushState({}, null, window.location.origin+window.location.pathname);
-
-    const map = this.map = this.make.tilemap({ key: "map" });
-    const tiles = map.addTilesetImage("smb", "tiles");
->>>>>>> master
 
     let map = this.map = new SceneMap(this, "map", "tilesSheet");
 
@@ -100,7 +93,6 @@ export default class PlatformerScene extends Phaser.Scene
     this.modes.player.ui.first.buttons.replay.on(
       XButton.Events.onPointerUp, () => {this.mode = this.modes.editor});
 
-<<<<<<< HEAD
     this.levelPlayer.player.on(Player.Events.win, this.win, this);
     this.levelPlayer.player.on(Player.Events.death, this.lose, this);
 
@@ -114,22 +106,7 @@ export default class PlatformerScene extends Phaser.Scene
       });
     } else {
       this.map.load();
-=======
-    this.levelStorage = new SceneStorage("levelData", options.levelId, BACKEND_LEVEL_API);
-    if (options.levelId) {
-      this.levelStorage.loadData().then(
-        (r) => this.editor.resetLevelData(r),
-        (e) => {
-          console.log(e);
-          this.editor.resetLevelData(this.levelStorage.getData());
-      });
-    } else {
-      this.editor.resetLevelData(this.levelStorage.getData());
->>>>>>> master
     }
-
-    this.ui = new SceneUI(this, uiRect, this.editor, this.levelPlayer);
-    this.ui.setMode(options.mode ? options.mode : SceneUI.Mode.editor);
   }
 
   get mode()
@@ -137,7 +114,6 @@ export default class PlatformerScene extends Phaser.Scene
     return this.__mode;
   }
 
-<<<<<<< HEAD
   set mode(newMode)
   {
     if (this.__mode == newMode) return;
@@ -148,8 +124,6 @@ export default class PlatformerScene extends Phaser.Scene
     this.__mode.enter();
   }
 
-=======
->>>>>>> master
   update(time, delta) {
     if (this.isPaused) return;
     this.mode.update(time, delta);
