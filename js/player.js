@@ -6,17 +6,19 @@
 
 export default class Player extends Phaser.Events.EventEmitter
 {
+  static get Events()
+  {
+      return {
+        "win":"win",
+        "death":"death"
+      }
+  }
+
   constructor(scene, x, y)
   {
     super();
 
     this.scene = scene;
-
-    Player.Events = {
-      "win":"win",
-      "death":"death"
-    }
-    Object.freeze(Player.Events);
 
     // Create the animations we need from the player spritesheet
     let anims = scene.anims;
@@ -43,23 +45,6 @@ export default class Player extends Phaser.Events.EventEmitter
       .setSize(18, 24)
       .setOffset(7, 9);
 
-    // Track the arrow keys & WASD
-    let { LEFT, RIGHT, UP, ONE, TWO, THREE } = Phaser.Input.Keyboard.KeyCodes;
-    let key = scene.input.keyboard.addKeys({
-      left: LEFT,
-      right: RIGHT,
-      up: UP,
-      w: THREE,
-      a: ONE,
-      d: TWO
-    });
-
-    this.keys = {
-      left: [key.left, key.a],
-      right: [key.right, key.d],
-      up: [key.up, key.w]
-    };
-
     this.sprite.anims.play("player-idle", true);
   }
 
@@ -74,6 +59,7 @@ export default class Player extends Phaser.Events.EventEmitter
     this.sprite.setVelocityX(0);
     this.sprite.setAccelerationY(0);
     this.sprite.setVelocityY(0);
+ 
     this.sprite.anims.play("player-idle", true);
   }
 

@@ -23,10 +23,10 @@ export default class XView extends Phaser.GameObjects.Container
 
   hasChild(object)
   {
-    return XView.__childLookup(object, this);
+    return XView.childLookup(object, this);
   }
 
-  static __childLookup(object, container)
+  static childLookup(object, container)
   {
     if (container === object)
       return true;
@@ -36,7 +36,7 @@ export default class XView extends Phaser.GameObjects.Container
         if (child === object)
           return true;
         else if (child instanceof Phaser.GameObjects.Container &&
-          XView.__childLookup(object, child))
+          XView.childLookup(object, child))
           return true;
         else
           return false;
