@@ -16,32 +16,8 @@ export default class PlatformerScene extends Phaser.Scene
     return { "editor" : "editor", "player" : "player" }
   }
 
-  static parseURL(url)
-  {
-    let options = {};
-    for (var p in new URLSearchParams(url).entries())
-    {
-      options[p[0]] = p[1];
-    }
-    return options;
-  }
-
   preload()
   {
-    // var progress = this.add.graphics();
-    //
-    // this.load.on('progress',
-    //  (value) => {
-    //   progress.clear();
-    //   progress.fillStyle(0x00ffff, 1);
-    //   progress.fillRect(0, 270, 800 * value, 60);
-    // });
-    //
-    // this.load.once('complete',
-    // () => {
-    //   progress.destroy();
-    // });
-
     this.load.spritesheet(
       "player",
       "./assets/spritesheets/0x72-industrial-player-32px-extruded.png",
@@ -66,9 +42,6 @@ export default class PlatformerScene extends Phaser.Scene
   {
     this.isPaused = false;
     this.isEditing = true;
-    let options = this.options = PlatformerScene.parseURL(window.location.search);
-    // remove params
-    history.pushState({}, null, window.location.origin + window.location.pathname);
 
     let map = this.map = new SceneMap(this, "map", "tilesSheet");
 
@@ -96,8 +69,8 @@ export default class PlatformerScene extends Phaser.Scene
     this.levelPlayer.player.on(Player.Events.win, this.win, this);
     this.levelPlayer.player.on(Player.Events.death, this.lose, this);
 
-    this.levelStorage = new SceneStorage("levelData", options.levelId, BACKEND_LEVEL_API);
-    if (options.levelId) {
+    this.levelStorage = new SceneStorage("levelData", this.urlParams.levelId, this.firebase.db.level);
+    if (this.urlParams.levelId) {
       this.levelStorage.loadData().then(
         (r) => this.map.load(r),
         (e) => {
@@ -107,6 +80,7 @@ export default class PlatformerScene extends Phaser.Scene
     } else {
       this.map.load();
     }
+    console.log(this);
   }
 
   get mode()

@@ -62,7 +62,7 @@ export default class BackendPromise extends Phaser.Events.EventEmitter
       request.onreadystatechange = () => {
           if(request.readyState == 4) {
               if(request.status==200) {
-                  console.log("CORS works!", request.responseText);
+                  //console.log("CORS works!", request.responseText);
               } else {
                   console.log("CORS error!", request);
               }
@@ -71,7 +71,7 @@ export default class BackendPromise extends Phaser.Events.EventEmitter
 
       request.addEventListener("load", () =>
       {
-        console.log(request.response);
+        //console.log(request.response);
         if (request.status < 400)
           succeed(request.response);
         else

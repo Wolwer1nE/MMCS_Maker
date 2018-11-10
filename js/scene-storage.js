@@ -2,6 +2,7 @@
   Store level data in local storage
 */
 import BackendPromise from "./backend-promise.js";
+import FirebaseCollection from "./firebase/firebase-collection.js";
 
 export default class SceneStorage extends Phaser.Events.EventEmitter
 {
@@ -12,8 +13,11 @@ export default class SceneStorage extends Phaser.Events.EventEmitter
     this.zipped = zipData;
     this.__setData(this.idFromKey(dataKey), remoteId);
 
-    if (remoteLocation)
+    if (typeof remoteLocation === "string")
       this.backend = new BackendPromise(remoteLocation, 1);
+    else
+      this.backend = remoteLocation;
+    console.log(localStorage);
   }
 
   idFromKey(key)
@@ -55,7 +59,13 @@ export default class SceneStorage extends Phaser.Events.EventEmitter
     if (this.zipped)
       rawData = LZString.decompressFromUTF16(rawData);
 
-    return JSON.parse(rawData);
+    try {
+      return JSON.parse(rawData);
+    } catch (err)
+    {
+      console.warn(err);
+      return rawData;
+    }
   }
 
   __setData(key, data)
@@ -66,7 +76,7 @@ export default class SceneStorage extends Phaser.Events.EventEmitter
       this.__removeData(key);
       return;
     }
-    if (typeof data != "object")
+    if (typeof data !== "object")
     {
       localStorage.setItem(key, data);
       return;
@@ -86,22 +96,33 @@ export default class SceneStorage extends Phaser.Events.EventEmitter
 
   __sendData(key)
   {
-    // TODO: user
     return new Promise((success, fail) =>
     {
       var rawData = localStorage.getItem(key);
-      if (rawData == null) return fail("No data for key: "+key);
-      if (this.backend == null) return fail("No backend for key: "+key);
+      if (rawData == null) fail("No data for key: "+key);
+      if (this.backend == null) fail("No backend for key: "+key);
 
-      this.backend.send(rawData).then(
-        (response) =>
-        {
-          const result = JSON.parse(response);
-          this.__setData(this.idFromKey(key), result.id);
-          success(result);
-        },
-        fail
-      );
+      if (this.backend instanceof FirebaseCollection)
+      {
+        this.backend.add({data:rawData}).then(
+          (response) =>
+          {
+            this.__setData(this.idFromKey(key), response.id);
+            success(response);
+          },
+          fail
+        );
+      } else {
+        this.backend.send(rawData).then(
+          (response) =>
+          {
+            const result = JSON.parse(response);
+            this.__setData(this.idFromKey(key), result.id);
+            success(result);
+          },
+          fail
+        );
+      }
     });
   }
 
@@ -110,17 +131,30 @@ export default class SceneStorage extends Phaser.Events.EventEmitter
     return new Promise((success, fail) =>
     {
       const dataId = this.__getData(this.idFromKey(key));
-      if (dataId == null) return fail("No ID for key: " + key);
-      if (this.backend == null) return fail("No backend for key: " + key);
+      if (dataId == null) fail("No ID for key: " + key);
+      if (this.backend == null) fail("No backend for key: " + key);
 
-      this.backend.get(dataId).then(
-        (response) =>
-        {
-          this.__setData(key, response);
-          success(this.__getData(key));
-        },
-        fail
-      );
+      if (this.backend instanceof FirebaseCollection)
+      {
+        this.backend.get(dataId).then(
+          (response) =>
+          {
+            this.__setData(key, response.data().data);
+            success(this.__getData(key));
+          },
+          fail
+        );
+      } else {
+        this.backend.get(dataId).then(
+          (response) =>
+          {
+            const result = JSON.parse(response);
+            this.__setData(key, result.data);
+            success(this.__getData(key));
+          },
+          fail
+         );
+       }
     });
   }
 }
