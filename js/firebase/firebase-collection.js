@@ -11,9 +11,9 @@ export default class FirebaseCollection extends Phaser.Events.EventEmitter
   static get Events()
   {
     return {
-      "Added":"Added",
-      "Modified":"Modified",
-      "Removed":"Removed"
+      "added":"added",
+      "modified":"modified",
+      "removed":"removed"
     }
   }
 
@@ -68,7 +68,7 @@ export default class FirebaseCollection extends Phaser.Events.EventEmitter
   {
     this.data.onSnapshot((snapshot) => {
       snapshot.docChanges().forEach((change) =>
-        this.emit(FirebaseCollection.Events[change.type.ucFirst()], change.doc))
+        this.emit(FirebaseCollection.Events[change.type], change.doc))
     });
   }
 

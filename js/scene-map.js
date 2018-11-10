@@ -4,6 +4,12 @@
 
 export default class SceneMap extends Phaser.Tilemaps.Tilemap
 {
+  static get Events() {
+    return {
+      "modified":"modified"
+    }
+  }
+
   constructor(scene, tilemapKey, tilesheetKey, tileWidth, tileHeight, insertNull)
   {
     if (tileWidth === undefined) { tileWidth = 32; }
@@ -35,6 +41,14 @@ export default class SceneMap extends Phaser.Tilemaps.Tilemap
       if (tiles.tileProperties[index].editable == true)
         this.__editables[tiles.tileProperties[index].name] = (0|index) + 1;
     }
+
+    this.beckon = new Phaser.Events.EventEmitter();
+  }
+
+  destroy()
+  {
+    this.beckon.destroy();
+    super.destroy();
   }
 
   get spawnPoint()
@@ -73,11 +87,15 @@ export default class SceneMap extends Phaser.Tilemaps.Tilemap
     tile.properties = this.tilesets[0].tileProperties[tileId-1];
     if (tile.properties.collides)
       tile.setCollision(true);
+
+    this.emit(SceneMap.Events.modified, tile);
   }
 
   removeTileAt(worldPosition)
   {
-    this.layer.tilemapLayer.removeTileAtWorldXY(worldPosition.x, worldPosition.y);
+    let tile = this.layer.tilemapLayer.removeTileAtWorldXY(worldPosition.x, worldPosition.y);
+
+    this.emit(SceneMap.Events.modified, tile);
   }
 
   canRemoveAt(worldPosition)
@@ -103,11 +121,13 @@ export default class SceneMap extends Phaser.Tilemaps.Tilemap
     this.layer.data.forEach( r => {
       r.forEach( t => {
         if (t.index != -1)
-          levelData.push({
-            index:t.index,
-            x:t.x, y:t.y,
-            properties:t.properties
-          });
+          levelData.push(
+            {
+              index: t.index,
+              x: t.x,
+              y: t.y,
+              properties: t.properties
+            });
       });
     });
     return levelData;
@@ -126,5 +146,39 @@ export default class SceneMap extends Phaser.Tilemaps.Tilemap
     if (levelData == null) return;
 
     this.dynamicLayerData = levelData;
+  }
+
+  /*
+  * BECKON
+  */
+
+  emit(event, payload)
+  {
+    this.beckon.emit(event, payload);
+  }
+
+  on(event, callback, context)
+  {
+    this.beckon.on(event, callback, context);
+  }
+
+  off(event, callback, context)
+  {
+    this.beckon.off(event, callback, context);
+  }
+
+  once(event, callback, context)
+  {
+    this.beckon.once(event, callback, context);
+  }
+
+  removeListener(event, callback, context, once)
+  {
+    this.beckon.removeListener(event, callback, context, once);
+  }
+
+  removeAllListeners(event)
+  {
+    this.beckon.removeAllListeners(event);
   }
 }

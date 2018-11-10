@@ -1,6 +1,7 @@
 ﻿/**
 */
 import SceneMode from "./scene-mode.js"
+import SceneMap from "./scene-map.js"
 import {XButton} from "./x-ui/x-button.js";
 
 export default class SceneModeEditor extends SceneMode
@@ -27,6 +28,8 @@ export default class SceneModeEditor extends SceneMode
       };
     }
     this.modes["erase"] = { tile: 0, sprite: null };
+
+    map.once(SceneMap.Events.modified, this.onMapModified, this);
 
     this.mode = this.modes.brick;
   }
@@ -118,6 +121,14 @@ export default class SceneModeEditor extends SceneMode
       if(pointer.isDown) this.onPointerDown(pointer);
   }
 
+  onMapModified(tile)
+  {
+    window.onbeforeunload = () => {
+      return "Are you sure you want to leave this page? \
+      This will abandon any progress on changes to document preferences";
+    }
+  }
+
   onPointerDown(pointer)
   {
     let worldPoint = pointer.positionToCamera(this.scene.cameras.main);
@@ -125,18 +136,13 @@ export default class SceneModeEditor extends SceneMode
     {
       if (this.map.canRemoveAt(worldPoint)) {
         this.map.removeTileAt(worldPoint);
-        this.map.save();
+        //this.map.save();
       }
     }
     else if (this.map.canPutAt(worldPoint))
     {
       this.map.putTile(this.mode.tile, worldPoint);
-      this.map.save();
+      //this.map.save();
     }
-  }
-
-  destroy()
-  {
-    super.destroy();
   }
 }

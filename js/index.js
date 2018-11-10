@@ -76,4 +76,4 @@ const config = {
 };
 
 //localStorage.removeItem("levelData");
-const game = new Phaser.Game(config);
+let game = new Phaser.Game(config);

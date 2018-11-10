@@ -76,9 +76,4 @@ export default class SceneMode extends Phaser.Events.EventEmitter
       }
     });
   }
-
-  destroy()
-  {
-    this.removeAllListeners();
-  }
 }
