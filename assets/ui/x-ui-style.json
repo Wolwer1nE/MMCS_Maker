@@ -29,7 +29,8 @@
       "color":"0xe86010",
       "fontFamily":"mancraftia",
       "fontSize":"22",
-      "align":"center"
+      "align":"center",
+      "wordWrapWidth":200
    },
    "marker":{
       "width":32,

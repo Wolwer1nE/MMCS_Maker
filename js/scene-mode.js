@@ -18,13 +18,12 @@ Phaser.GameObjects.Container.prototype.getAll =
 
 export default class SceneMode extends Phaser.Events.EventEmitter
 {
-  constructor(scene, layer, map, storage)
+  constructor(scene, layer, map)
   {
     super();
     this.scene = scene;
     this.layer = layer;
     this.map = map;
-    this.storage = storage;
 
     if (this.__initUI === undefined) {
       throw new TypeError("Classes extending SceneMode class must implement __initUI ");
@@ -33,18 +32,39 @@ export default class SceneMode extends Phaser.Events.EventEmitter
     this.__initUI(layer);
   }
 
-  enter()
+  enter(params)
   {
+    console.log(new Date(), "enter", params);
+    this.params = params;
+    if (params)
+    {
+      if (params.levelId)
+      {
+        this.scene.firebase.db.level.pull(this.params.levelId).then(
+          (level) => {
+            console.log(new Date(), "loaded");
+            this.map.load(level);
+          },
+          (error) => console.warn(error)
+        );
+      }
+      else
+      {
+        this.map.load();
+      }
+    }
+
     this.ui.setVisible(true);
     this.setHotkeysEnabled(true);
     this.active = true;
   }
 
-  update(time, delta)
-  {}
+  // update(time, delta)
+  // {}
 
   leave()
   {
+    console.log(new Date(), "leave");
     this.ui.setVisible(false);
     this.setHotkeysEnabled(false);
     this.active = false;

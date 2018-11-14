@@ -2,9 +2,10 @@
 * Firebase Collection Wrapper
 */
 
-String.prototype.ucFirst = function () {
-  return this.charAt(0).toUpperCase() + this.slice(1);
-};
+export function callConstructor(constructor) {
+    var factoryFunction = constructor.bind.apply(constructor, arguments);
+    return new factoryFunction();
+}
 
 export default class FirebaseCollection extends Phaser.Events.EventEmitter
 {
@@ -17,11 +18,12 @@ export default class FirebaseCollection extends Phaser.Events.EventEmitter
     }
   }
 
-  constructor(frCollection)
+  constructor(frCollection, docType)
   {
     super();
     this.data = frCollection;
-    this.subscribe();
+    this.docProto = docType;
+    //this.subscribe();
   }
 
   destroy()
@@ -36,27 +38,41 @@ export default class FirebaseCollection extends Phaser.Events.EventEmitter
     return this.data.add(data);
   }
 
+  pull(documentId)
+  {
+    return new Promise( (success, fail) =>
+    {
+      this.data.doc(documentId).get().then(
+      (doc) => {
+        if (doc.exists) success(callConstructor(this.docProto, this, doc.id, doc.data()));
+        else fail(doc);
+      }, fail);
+    });
+  }
+
   get(query)
   {
-    if (query == undefined)
-      return this.data.get();
-    else if (typeof query === "string")
-      return this.data.doc(query).get();
-    else if (query.param && query.rel && query.value)
-    {
-      var q = this.data.where(query.param, query.rel, query.value);
-      if (query.order)
-      {
-        if (typeof query.order === "string")
-          q = q.orderBy(query.order);
-        else
-          Object.keys(query.order).forEach(
-            (orderKey) => {
-              q = q.orderBy(orderKey, query.order[orderKey])
-            });
-      }
+    var q = this.data;
+    if (query === undefined)
       return q.get();
+
+    if (query.param && query.rel && query.value)
+    {
+      q = q.where(query.param, query.rel, query.value);
     }
+
+    if (query.order)
+    {
+      if (typeof query.order === "string")
+        q = q.orderBy(query.order);
+      else
+        Object.keys(query.order).forEach(
+          (orderKey) => {
+            q = q.orderBy(orderKey, query.order[orderKey])
+          });
+    }
+
+    return q.get();
   }
 
   set(key, data)

@@ -2,7 +2,7 @@
 * URL Params Extractor
 */
 
-export default class URLParamsPlugin extends Phaser.Plugins.BasePlugin
+export default class URLParams
 {
   static parseURL(url)
   {
@@ -14,12 +14,13 @@ export default class URLParamsPlugin extends Phaser.Plugins.BasePlugin
     return options;
   }
 
-  constructor(pluginManager)
+  static get()
   {
-    super(pluginManager);
-    let params = URLParamsPlugin.parseURL(window.location.search);
-    Object.assign(this, params);
-    // remove params from URL
+    return URLParams.parseURL(window.location.search);
+  }
+
+  static clear()
+  {
     history.pushState({}, null, window.location.origin + window.location.pathname);
   }
 }

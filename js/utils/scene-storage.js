@@ -9,7 +9,7 @@ export default class SceneStorage extends Phaser.Events.EventEmitter
   constructor(dataKey, remoteId, remoteLocation, zipData)
   {
     super();
-    this.key = dataKey
+    this.key = dataKey;
     this.zipped = zipData;
     this.__setData(this.idFromKey(dataKey), remoteId);
 
@@ -136,10 +136,11 @@ export default class SceneStorage extends Phaser.Events.EventEmitter
 
       if (this.backend instanceof FirebaseCollection)
       {
-        this.backend.get(dataId).then(
+        this.backend.pull(dataId).then(
           (response) =>
           {
-            this.__setData(key, response.data().data);
+            console.log(response);
+            this.__setData(key, response.content.data);
             success(this.__getData(key));
           },
           fail

@@ -3,6 +3,7 @@
 */
 
 import FirebaseCollection from "./firebase-collection.js"
+import FirebaseDocument from "./firebase-document.js"
 
 export default class FirebasePlugin extends Phaser.Plugins.BasePlugin
 {
@@ -22,11 +23,14 @@ export default class FirebasePlugin extends Phaser.Plugins.BasePlugin
     // Init wrappers
     data.collections.forEach(
       (collection) => {
-        this.db[collection.key] = new FirebaseCollection(this.db.collection(collection.remoteId));
+        this.db[collection.key] = new FirebaseCollection(
+          this.db.collection(collection.remoteId),
+          collection.proto || FirebaseDocument);
       });
 
     if (data.enablePersistance)
       this.db.enablePersistance();
+    console.log(this);
   }
 
   boot()
@@ -51,5 +55,4 @@ export default class FirebasePlugin extends Phaser.Plugins.BasePlugin
     this.shutdown();
     super.destroy();
   }
-
 }

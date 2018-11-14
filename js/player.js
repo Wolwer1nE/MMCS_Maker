@@ -4,20 +4,10 @@
  * method when you're done with the player.
  */
 
-export default class Player extends Phaser.Events.EventEmitter
+export default class Player
 {
-  static get Events()
-  {
-      return {
-        "win":"win",
-        "death":"death"
-      }
-  }
-
   constructor(scene, x, y)
   {
-    super();
-
     this.scene = scene;
 
     // Create the animations we need from the player spritesheet
@@ -100,6 +90,5 @@ export default class Player extends Phaser.Events.EventEmitter
   destroy()
   {
     this.sprite.destroy();
-    super.destroy();
   }
 }

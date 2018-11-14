@@ -10,7 +10,9 @@ export default class SceneModePlayer extends SceneMode
   {
     return {
       "coinCollected":"coinCollected",
-      "timerUpdated" :"timerUpdated"
+      "timerUpdated" :"timerUpdated",
+      "playerDead"   :"playerDead",
+      "playerWin"    :"playerWin"
     }
   }
 
@@ -88,8 +90,9 @@ export default class SceneModePlayer extends SceneMode
     super.destroy();
   }
 
-  enter()
+  enter(params)
   {
+    super.enter(params);
     this.map.setTileIndexCallback(this.collectible, this.onCoinTouched, this, this.map.layer.tilemapLayer);
 
     this.coinsCollected = 0;
@@ -97,7 +100,6 @@ export default class SceneModePlayer extends SceneMode
     this.coinsLabel.content.text = this.coinsCollected +"/"+ this.coinsTotal;
     this.startTimer();
 
-    super.enter();
   }
 
   leave()
@@ -113,14 +115,14 @@ export default class SceneModePlayer extends SceneMode
   {
     if (this.player.sprite.y > this.map.layer.tilemapLayer.height)
     {
-      this.player.emit(Player.Events.death);
+      this.emit(SceneModePlayer.Events.playerDead);
     }
     else if(Phaser.Math.Distance.Between(
       this.player.sprite.x, this.player.sprite.y,
       this.finish.x, this.finish.y) < this.map.tileWidth)
     {
       this.stopTimer();
-      this.player.emit(Player.Events.win);
+      this.emit(SceneModePlayer.Events.playerWin);
     }
 
     let {left, right, up} = this.ui.list[0].buttons;

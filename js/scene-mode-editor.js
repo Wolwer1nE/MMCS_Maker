@@ -10,10 +10,10 @@ export default class SceneModeEditor extends SceneMode
   constructor(scene, layer, map)
   {
     super(scene, layer, map);
+
     map.layers.forEach(
       (l) => this.scene.xui.insert(l.tilemapLayer)
     );
-    //layer.setInteractive(true);
     this.setEditing(true);
     this.finish = map.finishPoint;
 
@@ -28,10 +28,34 @@ export default class SceneModeEditor extends SceneMode
       };
     }
     this.modes["erase"] = { tile: 0, sprite: null };
+    this.mode = this.modes.brick;
 
     map.once(SceneMap.Events.modified, this.onMapModified, this);
+  }
 
-    this.mode = this.modes.brick;
+  update(time, delta)
+  {
+    let pointer = this.scene.input.activePointer;
+    let worldPoint = pointer.positionToCamera(this.scene.cameras.main);
+    if (worldPoint.x < 0 || worldPoint.x > this.layer.width ||
+        worldPoint.y < 0 || worldPoint.y > this.layer.height)
+    {
+      this.setEditing(false);
+    }
+    else
+      if(pointer.isDown) this.onPointerDown(pointer);
+  }
+
+  leave()
+  {
+    this.map.save(true);
+    super.leave();
+  }
+
+  destroy()
+  {
+    window.onbeforeunload = () => {};
+    super.destroy();
   }
 
   __initUI(layer)
@@ -108,24 +132,11 @@ export default class SceneModeEditor extends SceneMode
     }
   }
 
-  update(time, delta)
-  {
-    let pointer = this.scene.input.activePointer;
-    let worldPoint = pointer.positionToCamera(this.scene.cameras.main);
-    if (worldPoint.x < 0 || worldPoint.x > this.layer.width ||
-        worldPoint.y < 0 || worldPoint.y > this.layer.height)
-    {
-      this.setEditing(false);
-    }
-    else
-      if(pointer.isDown) this.onPointerDown(pointer);
-  }
-
   onMapModified(tile)
   {
     window.onbeforeunload = () => {
       return "Are you sure you want to leave this page? \
-      This will abandon any progress on changes to document preferences";
+      This will abandon any progress on changes to your level";
     }
   }
 
@@ -136,13 +147,11 @@ export default class SceneModeEditor extends SceneMode
     {
       if (this.map.canRemoveAt(worldPoint)) {
         this.map.removeTileAt(worldPoint);
-        //this.map.save();
       }
     }
     else if (this.map.canPutAt(worldPoint))
     {
       this.map.putTile(this.mode.tile, worldPoint);
-      //this.map.save();
     }
   }
 }

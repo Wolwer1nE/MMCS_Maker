@@ -5,7 +5,7 @@
 import PlatformerScene from "./platformer-scene.js";
 import XUI from "./x-ui/x-ui.js";
 import FirebasePlugin from "./firebase/firebase-plugin.js";
-import URLParamsPlugin from "./url-params-plugin.js";
+import Level from "./level.js";
 
 const config = {
   type: Phaser.AUTO,
@@ -55,17 +55,14 @@ const config = {
         },
         collections: [{
           key: "level",
-          remoteId: "level-data"
+          remoteId: "level-data",
+          proto: Level
         },
         {
           key: "score",
           remoteId: "user-score"
         }],
       }
-    },{
-      key: "URLParamsPlugin",
-      plugin: URLParamsPlugin,
-      mapping: "urlParams",
     }],
     scene: [{
       key: "XUI",
@@ -75,5 +72,5 @@ const config = {
   }
 };
 
-//localStorage.removeItem("levelData");
+localStorage.clear();
 let game = new Phaser.Game(config);
