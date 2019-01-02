@@ -171,7 +171,8 @@ export default class SceneMap extends Phaser.Tilemaps.Tilemap
       this.level = Level.restore(this.scene.firebase.db.level, "savedLevel");
     }
     //console.log("load", this.level, localStorage);
-    if (this.level) this.dynamicLayerData = this.level.data;
+    if (this.level)
+      this.dynamicLayerData = this.level.data;
   }
 
   get isStored()

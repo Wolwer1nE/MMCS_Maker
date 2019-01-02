@@ -16,7 +16,7 @@ Phaser.GameObjects.Container.prototype.getAll =
     });
   };
 
-export default class SceneMode extends Phaser.Events.EventEmitter
+export class SceneMode extends Phaser.Events.EventEmitter
 {
   constructor(scene, layer, map)
   {
@@ -95,5 +95,29 @@ export default class SceneMode extends Phaser.Events.EventEmitter
           .off("keyup_"+keyName, control.onPointerUpInside, control);
       }
     });
+  }
+}
+
+export class ModeBasedScene extends Phaser.Scene
+{
+
+  get mode()
+  {
+    return this.__mode;
+  }
+
+  setMode(newMode, params)
+  {
+    if (this.__mode == newMode) return;
+    if (this.__mode)
+      this.__mode.leave();
+
+    this.__mode = newMode;
+    this.__mode.enter(params);
+  }
+
+  set mode(newMode)
+  {
+    this.setMode(newMode)
   }
 }

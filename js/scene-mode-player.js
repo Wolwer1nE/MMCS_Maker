@@ -1,6 +1,6 @@
 /**
 */
-import SceneMode from "./scene-mode.js"
+import {SceneMode} from "./scene-mode.js"
 import Player from "./player.js";
 import {XButton} from "./x-ui/x-button.js";
 

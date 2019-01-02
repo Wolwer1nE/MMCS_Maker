@@ -1,6 +1,6 @@
 ﻿/**
 */
-import SceneMode from "./scene-mode.js"
+import {SceneMode} from "./scene-mode.js"
 import SceneMap from "./scene-map.js"
 import {XButton} from "./x-ui/x-button.js";
 
@@ -11,9 +11,6 @@ export default class SceneModeEditor extends SceneMode
   {
     super(scene, layer, map);
 
-    map.layers.forEach(
-      (l) => this.scene.xui.insert(l.tilemapLayer)
-    );
     this.setEditing(true);
     this.finish = map.finishPoint;
 

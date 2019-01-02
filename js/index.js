@@ -2,7 +2,8 @@
  * Author: Michael Hadley, mikewesthad.com
  */
 
-import PlatformerScene from "./platformer-scene.js";
+import EditorScene from "./editor-scene.js";
+import PlayerScene from "./player-scene.js";
 import XUI from "./x-ui/x-ui.js";
 import FirebasePlugin from "./firebase/firebase-plugin.js";
 import Level from "./level.js";
@@ -15,7 +16,14 @@ const config = {
   pixelArt: true,
   backgroundColor: "#5c94fc",
 
-  scene: PlatformerScene,
+  scene: [
+    EditorScene,
+    PlayerScene
+  ],
+
+  input : {
+    activePointers: 2
+  },
 
   physics: {
     default: "arcade",
