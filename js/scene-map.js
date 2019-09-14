@@ -2,7 +2,7 @@
 *
 */
 import Level from "./level.js"
-import AddBeckon from "./utils/beckon.js"
+import AddBeacon from "./utils/beacon.js"
 
 export default class SceneMap extends Phaser.Tilemaps.Tilemap
 {
@@ -45,13 +45,12 @@ export default class SceneMap extends Phaser.Tilemaps.Tilemap
         this.__editables[tiles.tileProperties[index].name] = (0|index) + 1;
     }
 
-    //this.__beckon = new Phaser.Events.EventEmitter();
-    AddBeckon(SceneMap.prototype);
+    AddBeacon(SceneMap.prototype);
   }
 
   destroy()
   {
-    this.__beckon.destroy();
+    this.__beacon.destroy();
     super.destroy();
   }
 

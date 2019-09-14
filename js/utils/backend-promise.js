@@ -47,6 +47,16 @@ export default class BackendPromise extends Phaser.Events.EventEmitter
     return BackendPromise.__request("GET", url);
   }
 
+  static __fetch(type, url, headers, data)
+  {
+    return fetch(new Request(url, {
+      method: type,
+      mode: "cors",
+      headers: headers,
+      body: data ? JSON.stringify(data) : null
+    }))
+  }
+
   static __request(type, url, headers, data)
   {
     return new Promise((succeed, fail) =>

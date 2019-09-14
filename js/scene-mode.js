@@ -101,11 +101,6 @@ export class SceneMode extends Phaser.Events.EventEmitter
 export class ModeBasedScene extends Phaser.Scene
 {
 
-  get mode()
-  {
-    return this.__mode;
-  }
-
   setMode(newMode, params)
   {
     if (this.__mode == newMode) return;
@@ -119,5 +114,10 @@ export class ModeBasedScene extends Phaser.Scene
   set mode(newMode)
   {
     this.setMode(newMode)
+  }
+
+  get mode()
+  {
+    return this.__mode;
   }
 }
