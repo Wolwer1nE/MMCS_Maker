@@ -47,6 +47,16 @@ export default class BackendPromise extends Phaser.Events.EventEmitter
     return BackendPromise.__request("GET", url);
   }
 
+  static __fetch(type, url, headers, data)
+  {
+    return fetch(new Request(url, {
+      method: type,
+      mode: "cors",
+      headers: headers,
+      body: data ? JSON.stringify(data) : null
+    }))
+  }
+
   static __request(type, url, headers, data)
   {
     return new Promise((succeed, fail) =>
@@ -62,7 +72,7 @@ export default class BackendPromise extends Phaser.Events.EventEmitter
       request.onreadystatechange = () => {
           if(request.readyState == 4) {
               if(request.status==200) {
-                  console.log("CORS works!", request.responseText);
+                  //console.log("CORS works!", request.responseText);
               } else {
                   console.log("CORS error!", request);
               }
@@ -71,7 +81,7 @@ export default class BackendPromise extends Phaser.Events.EventEmitter
 
       request.addEventListener("load", () =>
       {
-        console.log(request.response);
+        //console.log(request.response);
         if (request.status < 400)
           succeed(request.response);
         else
