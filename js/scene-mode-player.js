@@ -45,10 +45,10 @@ export default class SceneModePlayer extends SceneMode
     menu.setPosition(0, this.layer.height + height/3);
 
     let {left, right, up, replay} = menu.buttons;
-    let { ONE, TWO, THREE, FOUR } = Phaser.Input.Keyboard.KeyCodes;
-    left.hotkey = ONE;
-    right.hotkey = TWO;
-    up.hotkey = THREE;
+    let { A, D, W, FOUR } = Phaser.Input.Keyboard.KeyCodes;
+    left.hotkey = A;
+    right.hotkey = D;
+    up.hotkey = W;
     replay.hotkey  = FOUR;
 
     this.__ui.add(menu);
